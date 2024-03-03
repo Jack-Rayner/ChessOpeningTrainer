@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chess Opening Drill</title>
+    <!-- Link to the external stylesheet for the chessboard library -->
+    <link rel="stylesheet" href="css/chessboard-1.0.0.css" />
+    <!-- Link to your custom styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link href="https://fonts.cdnfonts.com/css/futura-std-4" rel="stylesheet">
+    <style>@import url('https://fonts.cdnfonts.com/css/futura-std-4');</style>
+    <!-- <link rel="icon" type="image/x-icon" href="img/favicon.ico"> -->
+    <link rel="icon" type="image/x-icon" href="img/android-chrome-512x512.png">
+</head>
+<body>
+    <div id="gameContainer">
+        <h1 id="title">Chess Opening Drills</h1>
+        <div id="board" style="width: 600px; height: 600px;"></div>
+        <p id="openingName"></p>
+        <p id="status"></p>
+        <div id="buttonContainer">
+            <button id="practiceAgain" style="display: none;">Practice Again</button>
+            <button id="newOpening" style="display: none;">Try New Opening</button>
+        </div>
+    </div>
+    <button id="darkModeToggle">Dark Mode</button>
+    <!-- Include the chess.js library -->
+    <script src="js/chess.js"></script>
+    <!-- Include the chessboard.js library -->
+    <script src="js/chessboard-1.0.0.js"></script>
+    <!-- Include your custom script -->
+    <script src="js/script.js"></script>
+</body>
+</html>
