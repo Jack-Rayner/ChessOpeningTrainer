@@ -13,25 +13,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const openings = [
         { "side": "White", "name": "Ruy Lopez", "defendsAgainst": "Open Games", "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5"] },
         { "side": "White", "name": "Italian Game", "defendsAgainst": "Open Games", "moves": ["e4", "e5", "Nf3", "Nc6", "Bc4"] },
-        { "side": "Black", "name": "Sicilian Defense", "defendsAgainst": "King's Pawn Opening", "moves": ["e4", "c5", "Nf3", "d6", "d4"] },
-        { "side": "Black", "name": "French Defense", "defendsAgainst": "King's Pawn Opening", "moves": ["e4", "e6", "d4", "d5", "Nc3"] },
-        { "side": "Black", "name": "Caro-Kann Defense", "defendsAgainst": "King's Pawn Opening", "moves": ["e4", "c6", "d4", "d5", "Nc3"] },
-        { "side": "Black", "name": "Pirc Defense", "defendsAgainst": "King's Pawn Opening", "moves": ["e4", "d6", "d4", "Nf6", "Nc3", "g6"] },
-        { "side": "Black", "name": "King's Indian Defense", "defendsAgainst": "Queen's Pawn Opening", "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "Bg7"] },
+        { "side": "Black", "name": "Sicilian Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "c5", "Nf3", "d6", "d4"] },
+        { "side": "Black", "name": "French Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "e6", "d4", "d5", "Nc3"] },
+        { "side": "Black", "name": "Caro-Kann Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "c6", "d4", "d5", "Nc3"] },
+        { "side": "Black", "name": "Pirc Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "d6", "d4", "Nf6", "Nc3", "g6"] },
+        { "side": "Black", "name": "King's Indian Defense", "defendsAgainst": "Queen's Pawn ", "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "Bg7"] },
         { "side": "White", "name": "Queen's Gambit", "defendsAgainst": "Closed Games", "moves": ["d4", "d5", "c4", "e6", "Nc3", "Nf6"] },
         { "side": "Black", "name": "Slav Defense", "defendsAgainst": "Queen's Gambit", "moves": ["d4", "d5", "c4", "c6"] },
         { "side": "White", "name": "King's Gambit", "defendsAgainst": "Open Games", "moves": ["e4", "e5", "f4", "exf4"] },
-        { "side": "White", "name": "English Opening", "defendsAgainst": "Flank Openings", "moves": ["c4", "e5", "Nc3", "Nf6", "Nf3", "Nc6"] },
-        { "side": "Black", "name": "Nimzo-Indian Defense", "defendsAgainst": "Queen's Pawn Opening", "moves": ["d4", "Nf6", "c4", "e6", "Nc3", "Bb4"] },
-        { "side": "Black", "name": "Grünfeld Defense", "defendsAgainst": "Queen's Pawn Opening", "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "d5"] },
-        { "side": "Black", "name": "Alekhine's Defense", "defendsAgainst": "King's Pawn Opening", "moves": ["e4", "Nf6", "e5", "Nd5", "d4", "d6"] },
-        { "side": "Black", "name": "Dutch Defense", "defendsAgainst": "Queen's Pawn Opening", "moves": ["d4", "f5", "g3", "Nf6", "Bg2", "e6"] },
-        { "side": "Black", "name": "Benoni Defense", "defendsAgainst": "Queen's Pawn Opening", "moves": ["d4", "Nf6", "c4", "c5", "d5", "e6"] },
-        { "side": "Black", "name": "Modern Defense", "defendsAgainst": "King's Pawn Opening", "moves": ["e4", "g6", "d4", "Bg7", "Nc3", "d6"] },
-        { "side": "Black", "name": "Philidor Defense", "defendsAgainst": "King's Pawn Opening", "moves": ["e4", "e5", "Nf3", "d6", "d4", "Nd7"] },
-        { "side": "Black", "name": "Scandinavian Defense", "defendsAgainst": "King's Pawn Opening", "moves": ["e4", "d5", "exd5", "Qxd5", "Nc3", "Qa5"] },
+        { "side": "White", "name": "English Opening", "defendsAgainst": "Flank s", "moves": ["c4", "e5", "Nc3", "Nf6", "Nf3", "Nc6"] },
+        { "side": "Black", "name": "Nimzo-Indian Defense", "defendsAgainst": "Queen's Pawn ", "moves": ["d4", "Nf6", "c4", "e6", "Nc3", "Bb4"] },
+        { "side": "Black", "name": "Grünfeld Defense", "defendsAgainst": "Queen's Pawn ", "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "d5"] },
+        { "side": "Black", "name": "Alekhine's Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "Nf6", "e5", "Nd5", "d4", "d6"] },
+        { "side": "Black", "name": "Dutch Defense", "defendsAgainst": "Queen's Pawn ", "moves": ["d4", "f5", "g3", "Nf6", "Bg2", "e6"] },
+        { "side": "Black", "name": "Benoni Defense", "defendsAgainst": "Queen's Pawn ", "moves": ["d4", "Nf6", "c4", "c5", "d5", "e6"] },
+        { "side": "Black", "name": "Modern Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "g6", "d4", "Bg7", "Nc3", "d6"] },
+        { "side": "Black", "name": "Philidor Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "e5", "Nf3", "d6", "d4", "Nd7"] },
+        { "side": "Black", "name": "Scandinavian Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "d5", "exd5", "Qxd5", "Nc3", "Qa5"] },
         { "side": "White", "name": "Vienna Game", "defendsAgainst": "Open Games", "moves": ["e4", "e5", "Nc3", "Nf6", "f4", "d5"] },
-        { "side": "Black", "name": "Petrov's Defense", "defendsAgainst": "King's Pawn Opening", "moves": ["e4", "e5", "Nf3", "Nf6", "Nxe5", "d6"] }
+        { "side": "Black", "name": "Petrov's Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "e5", "Nf3", "Nf6", "Nxe5", "d6"] }
     ];
     function updateDarkMode() {
         const isDarkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
@@ -89,7 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const opening = openings[Math.floor(Math.random() * openings.length)];
         currentOpening = opening;
         game.reset();
-        openingNameElement.textContent = `Opening: ${opening.name}`;
+        if (currentOpening.side === "White") {
+            openingNameElement.textContent = `Opening: ${opening.name}`;
+        } else {
+            openingNameElement.textContent = `Opening: ${opening.name}. | Defends: ${opening.defendsAgainst}`;
+        }
+            
         currentMoveIndex = 0;
         statusElement.textContent = "Make your move";
     
@@ -147,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentMoveIndex++;
                     updateStatusAfterMove();
                 }
-            }, 500); // Slight delay to visually separate automatic moves
+            }, 200); // Slight delay to visually separate automatic moves
         }
     }
     

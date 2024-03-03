@@ -115,6 +115,7 @@ button {
     margin: 0 auto; /* Center the board */
     border: 2px solid #f0f0f0; /* Just an example, adjust based on your board's appearance */
     box-sizing: border-box;
+    margin-bottom: 35px;
 }
 
 .dark-mode #title,
