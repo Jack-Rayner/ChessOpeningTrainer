@@ -7,21 +7,18 @@ body {
 }
 
 #title {
-    font-family: 'Futura', sans-serif; /* Use the Futura font */
-    font-size: 36px; /* Adjust size as needed */
-    color: #1e1e1e; /* A darker color for better contrast */
-    text-align: center; /* Center the title */
-    /* margin: 20px 0; */
+    font-family: 'Futura', sans-serif;
+    font-size: 36px;
+    color: #1e1e1e;
+    text-align: center;
     margin-top: 0px;
     margin-bottom: 25px;
-    font-weight: normal; /* Futura looks better in a normal weight */
-    letter-spacing: 1px; /* Add some spacing between letters */
+    font-weight: normal;
+    letter-spacing: 1px;
 }
 
 button {
-    /* margin-top: 20px; */
     padding: 10px 15px;
-    /* background-color: #4CAF50; */
     color: white;
     border: none;
     border-radius: 5px;
@@ -30,14 +27,14 @@ button {
 
 #gameContainer {
     max-width: 800px;
-    margin: 20px auto; /* Center the container */
+    margin: 20px auto; /* Center container */
     padding: 30px;
-    text-align: center; /* Center align content */
+    text-align: center; /* Center content */
 }
 
 #board {
-    margin: 0 auto; /* Center the board */
-    border: 2px solid #1e1e1e; /* Just an example, adjust based on your board's appearance */
+    margin: 0 auto; /* Center board */
+    border: 2px solid #1e1e1e;
     box-sizing: border-box;
     margin-bottom: 35px;
 }
@@ -52,95 +49,87 @@ button {
 #buttonContainer {
     text-align: center;
     display: inline-block;
-    margin-top: 12px; /* Space from the content above */
-    /* position: absolute; */
-    /* Remove the width: 100% if the container's width should be based on its content */
+    margin-top: 12px;
 }
 
-/* Styles for the practice buttons */
 #practiceAgain, #newOpening {
     display: inline-block;
     /* display: flex; */
-    margin: 5px; /* Add some space around the buttons */
+    margin: 5px;
     padding: 12px 18px;
-    background-color: #4b7399; /* A pleasant blue background */
-    color: #f4f4f4; /* White text for contrast */
-    border: none; /* No border */
+    background-color: #4b7399;
+    color: #f4f4f4;
+    border: none;
     border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Change cursor to indicate clickable */
-    font-family: 'Futura Std', sans-serif; /* Maintain font consistency */
-    font-size: 1.2rem; /* Matching font size to the body */
-    /* float:left; */
+    cursor: pointer;
+    font-family: 'Futura Std', sans-serif;
+    font-size: 1.2rem;
 }
 
-/* Hover effect for buttons */
 #practiceAgain:hover, #newOpening:hover {
     background-color: #385875;
 }
 
-/* Focus styles for accessibility */
 #practiceAgain:focus, #newOpening:focus {
-    outline: 2px solid #FFF; /* Adding an outline to improve accessibility */
+    outline: 2px solid #FFF;
     outline-offset: 2px;
 }
 
-/* Styles for the dark mode toggle switch */
 #darkModeToggle {
     font-family: 'Futura', sans-serif;
     position: fixed;
     bottom: 20px;
     right: 20px;
     cursor: pointer;
-    /* Add more styling for the toggle switch if necessary */
 }
 
 /* Ensure the dark mode toggle is visible in both modes */
 #darkModeToggle {
-    background-color: #f0f0f0; /* Light background for the switch in dark mode */
-    color: #333; /* Dark text for the switch in dark mode */
+    background-color: #f0f0f0;
+    color: #333;
 }
 
 .dark-mode #darkModeToggle {
-    background-color: #333; /* Dark background for the switch in light mode */
-    color: #f0f0f0; /* Light text for the switch in light mode */
+    background-color: #333;
+    color: #f0f0f0;
 }
 
 /* Dark mode styles */
 .dark-mode {
-    background-color: #1e1e1e; /* Dark background for dark mode */
-    color: #f4f4f4; /* Light text for dark mode */
+    background-color: #1e1e1e;
+    color: #f4f4f4;
 }
 
 .dark-mode #board {
-    margin: 0 auto; /* Center the board */
-    border: 2px solid #f0f0f0; /* Just an example, adjust based on your board's appearance */
+    margin: 0 auto;
+    border: 2px solid #f0f0f0;
     box-sizing: border-box;
     margin-bottom: 35px;
 }
 
 .dark-mode #title,
 .dark-mode button {
-    color: #f4f4f4; /* Ensuring all text is light in dark mode */
+    color: #f4f4f4;
 }
 
 .dark-mode #practiceAgain,
 .dark-mode #newOpening {
-    background-color: #f0f0f0; /* Adjusted background color for dark mode */
-    color: #4b7399; /* Text color for buttons in dark mode */
+    background-color: #f0f0f0;
+    color: #4b7399;
 }
 
 .dark-mode #openingName, 
 .dark-mode #status {
-    margin-top: 12px; /* Same as in light mode */
-    margin-bottom: 0; /* Same as in light mode */
+    margin-top: 12px;
+    margin-bottom: 0;
     color: #f4f4f4;
 }
 
 .dark-mode #practiceAgain:hover,
 .dark-mode #newOpening:hover {
-    background-color: #d4d4d4; /* Hover background color for buttons in dark mode */
+    background-color: #d4d4d4;
 }
 
 .dark-mode button {
-    background-color: #333; /* Darker button background for dark mode */
+    background-color: #333;
 }

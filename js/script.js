@@ -8,8 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentOpening = {};
     let currentMoveIndex = 0;
 
-    //Actual Game
-    // Define your openings
+    // Openings
     const openings = [
         { "side": "White", "name": "Ruy Lopez", "defendsAgainst": "Open Games", "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5"] },
         { "side": "White", "name": "Italian Game", "defendsAgainst": "Open Games", "moves": ["e4", "e5", "Nf3", "Nc6", "Bc4"] },
@@ -33,6 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { "side": "White", "name": "Vienna Game", "defendsAgainst": "Open Games", "moves": ["e4", "e5", "Nc3", "Nf6", "f4", "d5"] },
         { "side": "Black", "name": "Petrov's Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "e5", "Nf3", "Nf6", "Nxe5", "d6"] }
     ];
+
+    // Dark Mode
     function updateDarkMode() {
         const isDarkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
         document.body.classList.toggle('dark-mode', isDarkModeEnabled);
@@ -47,11 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateDarkMode();
 
+    // Completed Opening Buttons
     const practiceAgainButton = document.getElementById('practiceAgain');
     const newOpeningButton = document.getElementById('newOpening');
 
     practiceAgainButton.addEventListener('click', restartOpening);
     newOpeningButton.addEventListener('click', startNewOpening);
+
 
     function restartOpening() {
         currentMoveIndex = 0; // Resets the index to start from the beginning of the opening
@@ -70,14 +73,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // If the opening is for Black, play White's first move automatically. Otherwise, set up for the player's move.
         if (currentOpening.side === "Black") {
             setTimeout(() => {
-                // Ensure we're correctly starting the sequence from the beginning
+                // Ensure sequence started from the beginning
                 playNextMove();
-            }, 100); // A slight delay to ensure the board updates visually for the user
+            }, 100); // Small delay looks better
         }
     }
     
     
-
     function startNewOpening() {
         selectRandomOpening();
         statusElement.textContent = "Try a new opening!";
@@ -92,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentOpening.side === "White") {
             openingNameElement.textContent = `Opening: ${opening.name}`;
         } else {
-            openingNameElement.textContent = `Opening: ${opening.name}. | Defends: ${opening.defendsAgainst}`;
+            openingNameElement.textContent = `Opening: ${opening.name}. | Defends: ${opening.defendsAgainst}`; // Include whites opening if playing black
         }
             
         currentMoveIndex = 0;
@@ -168,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetToCurrentOpening() {
         game.reset(); // Resets the chess.js game state
-        // Don't apply moves here since we're resetting to the start
+        // Don't apply moves here as resetting to the start
         board.position('start'); // Set the board to the start position
     }
 
