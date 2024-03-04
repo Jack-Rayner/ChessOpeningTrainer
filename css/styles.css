@@ -18,7 +18,7 @@ body {
 }
 
 button {
-    padding: 10px 15px;
+    padding: 14px 21px;
     color: white;
     border: none;
     border-radius: 5px;
@@ -77,6 +77,7 @@ button {
 
 #darkModeToggle {
     font-family: 'Futura', sans-serif;
+    font-size: 1.2rem;
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -85,7 +86,7 @@ button {
 
 /* Ensure the dark mode toggle is visible in both modes */
 #darkModeToggle {
-    background-color: #f0f0f0;
+    background-color: #ededed;
     color: #333;
 }
 
@@ -115,7 +116,7 @@ button {
 .dark-mode #practiceAgain,
 .dark-mode #newOpening {
     background-color: #f0f0f0;
-    color: #4b7399;
+    color: #44688a;
 }
 
 .dark-mode #openingName, 
