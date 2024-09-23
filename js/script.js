@@ -23,34 +23,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch openings
     let openingsData = {};
     fetch('./data/openings.json')
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to load openings');
-            return response.json();
-        })
-        .then(data => openingsData = data)
-        .catch(error => {
-            console.error(error);
-            statusElement.textContent = "Error loading openings data.";
-        });
+    .then(response => {
+        if (!response.ok) throw new Error('Failed to load openings');
+        return response.json();
+    })
+    .then(data => openingsData = data)
+    .catch(error => {
+        console.error(error);
+        statusElement.textContent = "Failed to load openings. Please try again later.";
+    });
 
     // Dark Mode
     function initializeDarkMode() {
-        const savedDarkMode = localStorage.getItem('darkMode');
-        if (savedDarkMode === 'enabled') {
-            document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');  // Ensure it loads in light mode
-        }
+        const isDarkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
+        document.body.classList.toggle('dark-mode', isDarkModeEnabled);
     }
-
-    function toggleDarkMode() {
+   
+    darkModeToggle.addEventListener('click', () => {
         const isDarkModeEnabled = !document.body.classList.contains('dark-mode');
         document.body.classList.toggle('dark-mode', isDarkModeEnabled);
         localStorage.setItem('darkMode', isDarkModeEnabled ? 'enabled' : 'disabled');
-    }
-
-    darkModeToggle.addEventListener('click', toggleDarkMode);
-    initializeDarkMode();  // Ensure website loads in light mode unless dark mode is enabled
+    });
+   
+    initializeDarkMode();
 
     // Restart opening
     function restartOpening() {
@@ -119,16 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (shouldPlayNextMove()) {
                     setTimeout(playNextMove, 10);  // Delay the computer's next move slightly
                 }
-            }, 100);  // Short delay for smooth animation
+            }, 10);  // Short delay for smooth animation
         }
-    }    
-
-    function initializeBoard() {
-        board = Chessboard('board', {
-            draggable: true,
-            position: 'start',
-            onDrop: handleMove,  // Handle move logic here
-        });
     }
 
     // Play next move for the computer
@@ -191,15 +178,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('gameContainer');
     const sidebarToggle = document.getElementById('sidebarToggle');
 
-    sidebarToggle.addEventListener('click', () => {
-        if (sidebar.style.left === '0px') {
+    function toggleSidebar() {
+        const isOpen = sidebar.style.left === '0px';
+        sidebar.style.left = isOpen ? '-250px' : '0px';
+        container.classList.toggle('shifted', !isOpen);
+        sidebarToggle.classList.toggle('active', !isOpen);
+    }   
+    
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    document.addEventListener('click', (event) => {
+        if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
             sidebar.style.left = '-250px';
-            container.classList.remove('shifted');
-            sidebarToggle.classList.remove('active');
-        } else {
-            sidebar.style.left = '0px';
-            container.classList.add('shifted');
-            sidebarToggle.classList.add('active');
         }
     });
 
