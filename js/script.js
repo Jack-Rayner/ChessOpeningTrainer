@@ -22,8 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch openings
     let openingsData = {};
-    fetch('/data/openings.json')
-        .then(response => response.ok ? response.json() : Promise.reject('Failed to load openings'))
+    fetch('./data/openings.json')
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to load openings');
+            return response.json();
+        })
         .then(data => openingsData = data)
         .catch(error => {
             console.error(error);
@@ -33,24 +36,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dark Mode
     function initializeDarkMode() {
         const savedDarkMode = localStorage.getItem('darkMode');
-        document.body.classList.toggle('dark-mode', savedDarkMode === 'enabled');
-        updateSidebarToggleColor();
+        if (savedDarkMode === 'enabled') {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');  // Ensure it loads in light mode
+        }
     }
 
     function toggleDarkMode() {
         const isDarkModeEnabled = !document.body.classList.contains('dark-mode');
         document.body.classList.toggle('dark-mode', isDarkModeEnabled);
         localStorage.setItem('darkMode', isDarkModeEnabled ? 'enabled' : 'disabled');
-        updateSidebarToggleColor();
-    }
-
-    function updateSidebarToggleColor() {
-        const mode = document.body.classList.contains('dark-mode') ? '--dark-mode-text' : '--light-mode-text';
-        sidebarToggle.style.color = getComputedStyle(document.documentElement).getPropertyValue(mode);
     }
 
     darkModeToggle.addEventListener('click', toggleDarkMode);
-    initializeDarkMode();
+    initializeDarkMode();  // Ensure website loads in light mode unless dark mode is enabled
 
     // Restart opening
     function restartOpening() {
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Start new opening
     function startNewOpening(openingFamily) {
-        currentFamily = openingFamily;
+        currentFamily = openingFamily;  // Remember the selected family
         const familyKey = openingFamily.toLowerCase()
             .replace(/\s+/g, '')    
             .replace(/['-]/g, '')   
@@ -104,21 +104,31 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleMove(source, target) {
         let move = game.move({ from: source, to: target, promotion: 'q' });
     
+        // Validate the move against the current opening variation
         if (move === null || move.san !== currentOpening.moves[currentMoveIndex]) {
             game.undo(); 
             statusElement.textContent = `Incorrect move! The correct move was ${currentOpening.moves[currentMoveIndex]}. Try again.`;
-            return 'snapback';
+            return 'snapback';  // Snap back if the move is incorrect
         } else {
-            currentMoveIndex++;
+            currentMoveIndex++;  // Move to the next one in the variation
             updateStatusAfterMove();
     
+            // Delay board update slightly after the move to avoid animation conflicts
             setTimeout(() => {
-                board.position(game.fen());
+                board.position(game.fen());  // Update board position after the user's move
                 if (shouldPlayNextMove()) {
-                    setTimeout(playNextMove, 10);
+                    setTimeout(playNextMove, 10);  // Delay the computer's next move slightly
                 }
-            }, 100);
+            }, 100);  // Short delay for smooth animation
         }
+    }    
+
+    function initializeBoard() {
+        board = Chessboard('board', {
+            draggable: true,
+            position: 'start',
+            onDrop: handleMove,  // Handle move logic here
+        });
     }
 
     // Play next move for the computer
@@ -156,6 +166,16 @@ document.addEventListener('DOMContentLoaded', () => {
         board.position('start');
     }
 
+    // Initialize chessboard
+    function initializeBoard() {
+        board = Chessboard('board', {
+            draggable: true,
+            position: 'start',
+            onDrop: handleMove,
+            onSnapEnd: () => board.position(game.fen()),
+        });
+    }
+
     initializeBoard();
 
     // Sidebar opening selections
@@ -172,17 +192,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebarToggle = document.getElementById('sidebarToggle');
 
     sidebarToggle.addEventListener('click', () => {
-        sidebar.style.left = sidebar.style.left === '0px' ? '-250px' : '0px';
-        container.classList.toggle('shifted');
-        sidebarToggle.classList.toggle('active');
+        if (sidebar.style.left === '0px') {
+            sidebar.style.left = '-250px';
+            container.classList.remove('shifted');
+            sidebarToggle.classList.remove('active');
+        } else {
+            sidebar.style.left = '0px';
+            container.classList.add('shifted');
+            sidebarToggle.classList.add('active');
+        }
     });
 
     document.addEventListener('click', function(event) {
         if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
-            sidebar.style.left = '-250px'; 
-            updateSidebarToggleColor(); // Update the text color when closing the sidebar
+            sidebar.style.left = '-250px'; // Close sidebar
+    
+            // Update the text color based on the current mode
+            if (document.body.classList.contains('dark-mode')) {
+                sidebarToggle.style.color = getComputedStyle(document.documentElement).getPropertyValue('--dark-mode-text');
+            } else {
+                sidebarToggle.style.color = getComputedStyle(document.documentElement).getPropertyValue('--light-mode-text');
+            }
         }
     });
 
-    sidebar.style.left = '-250px';
+    sidebar.style.left = '-250px'; // Ensure the sidebar starts closed
 });
