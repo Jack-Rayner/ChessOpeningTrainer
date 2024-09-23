@@ -10,26 +10,85 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link href="https://fonts.cdnfonts.com/css/futura-std-4" rel="stylesheet">
     <style>@import url('https://fonts.cdnfonts.com/css/futura-std-4');</style>
-    <!-- <link rel="icon" type="image/x-icon" href="img/favicon.ico"> -->
     <link rel="icon" type="image/x-icon" href="img/android-chrome-512x512.png">
 </head>
 <body>
+    <!-- Toggle button for the sidebar -->
+    <span id="sidebarToggle">☰ Menu</span>
+    
+    <!-- Sidebar for choosing opening families -->
+    <div id="sidebar">
+        <h2>Choose Opening</h2>
+        <a href="#" data-opening="Ruy Lopez">Ruy Lopez</a>
+        <a href="#" data-opening="Italian Game">Italian Game</a>
+        <a href="#" data-opening="Sicilian">Sicilian Defense</a>
+        <a href="#" data-opening="French">French Defense</a>
+        <a href="#" data-opening="Caro-Kann">Caro-Kann Defense</a>
+        <a href="#" data-opening="Pirc">Pirc Defense</a>
+        <a href="#" data-opening="King's Indian">King's Indian Defense</a>
+        <a href="#" data-opening="Queen's Gambit">Queen's Gambit</a>
+        <a href="#" data-opening="Slav">Slav Defense</a>
+        <a href="#" data-opening="King's Gambit">King's Gambit</a>
+        <a href="#" data-opening="English Opening">English Opening</a>
+        <a href="#" data-opening="Nimzo-Indian">Nimzo-Indian Defense</a>
+        <a href="#" data-opening="Grünfeld">Grünfeld Defense</a>
+        <a href="#" data-opening="Alekhine">Alekhine's Defense</a>
+        <a href="#" data-opening="Dutch">Dutch Defense</a>
+        <a href="#" data-opening="Benoni">Benoni Defense</a>
+        <a href="#" data-opening="Modern">Modern Defense</a>
+        <a href="#" data-opening="Philidor">Philidor Defense</a>
+        <a href="#" data-opening="Scandinavian">Scandinavian Defense</a>
+        <a href="#" data-opening="Vienna Game">Vienna Game</a>
+        <a href="#" data-opening="Petrov">Petrov's Defense</a>
+    </div>
+
+    <!-- Main content area -->
     <div id="gameContainer">
         <h1 id="title">Chess Opening Drills</h1>
         <div id="board" style="width: 600px; height: 600px;"></div>
         <p id="openingName"></p>
         <p id="status"></p>
+        
         <div id="buttonContainer">
             <button id="practiceAgain" style="display: none;">Practice Again</button>
-            <button id="newOpening" style="display: none;">Try New Opening</button>
+            <button id="newOpening" style="display: none;">Try New Variation</button>
         </div>
     </div>
+
     <button id="darkModeToggle">Dark Mode</button>
+    
     <!-- Include the chess.js library -->
     <script src="js/chess.js"></script>
+    
     <!-- Include the chessboard.js library -->
     <script src="js/chessboard-1.0.0.js"></script>
+    
     <!-- Include your custom script -->
     <script src="js/script.js"></script>
+
+    <!-- JavaScript for toggling sidebar -->
+    <script>
+        // Sidebar toggle functionality
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            const container = document.getElementById('gameContainer');
+
+            // Toggle sidebar open/closed
+            if (sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open'); // Close sidebar
+                container.classList.remove('shifted'); // Center board
+            } else {
+                sidebar.classList.add('open'); // Open sidebar
+                container.classList.add('shifted'); // Shift board
+            }
+        });
+
+        // Function to handle selecting an opening family
+        function selectOpeningByFamily(familyName) {
+            // Function implementation from the previous code
+            console.log(`Selected opening family: ${familyName}`);
+            // Add your logic to load the selected opening
+        }
+    </script>
 </body>
 </html>

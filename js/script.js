@@ -1,166 +1,149 @@
 document.addEventListener('DOMContentLoaded', () => {
     const statusElement = document.getElementById('status');
     const openingNameElement = document.getElementById('openingName');
-    let board = null; // Will be initialized later
-    let game = new Chess(); // Assuming chess.js is correctly included
     const darkModeToggle = document.getElementById('darkModeToggle');
-
-    let currentOpening = {};
-    let currentMoveIndex = 0;
-
-    // Openings
-    const openings = [
-        { "side": "White", "name": "Ruy Lopez", "defendsAgainst": "Open Games", "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5"] },
-        { "side": "White", "name": "Italian Game", "defendsAgainst": "Open Games", "moves": ["e4", "e5", "Nf3", "Nc6", "Bc4"] },
-        { "side": "Black", "name": "Sicilian Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "c5", "Nf3", "d6", "d4"] },
-        { "side": "Black", "name": "French Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "e6", "d4", "d5", "Nc3"] },
-        { "side": "Black", "name": "Caro-Kann Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "c6", "d4", "d5", "Nc3"] },
-        { "side": "Black", "name": "Pirc Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "d6", "d4", "Nf6", "Nc3", "g6"] },
-        { "side": "Black", "name": "King's Indian Defense", "defendsAgainst": "Queen's Pawn ", "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "Bg7"] },
-        { "side": "White", "name": "Queen's Gambit", "defendsAgainst": "Closed Games", "moves": ["d4", "d5", "c4", "e6", "Nc3", "Nf6"] },
-        { "side": "Black", "name": "Slav Defense", "defendsAgainst": "Queen's Gambit", "moves": ["d4", "d5", "c4", "c6"] },
-        { "side": "White", "name": "King's Gambit", "defendsAgainst": "Open Games", "moves": ["e4", "e5", "f4", "exf4"] },
-        { "side": "White", "name": "English Opening", "defendsAgainst": "Flank s", "moves": ["c4", "e5", "Nc3", "Nf6", "Nf3", "Nc6"] },
-        { "side": "Black", "name": "Nimzo-Indian Defense", "defendsAgainst": "Queen's Pawn ", "moves": ["d4", "Nf6", "c4", "e6", "Nc3", "Bb4"] },
-        { "side": "Black", "name": "Grünfeld Defense", "defendsAgainst": "Queen's Pawn ", "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "d5"] },
-        { "side": "Black", "name": "Alekhine's Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "Nf6", "e5", "Nd5", "d4", "d6"] },
-        { "side": "Black", "name": "Dutch Defense", "defendsAgainst": "Queen's Pawn ", "moves": ["d4", "f5", "g3", "Nf6", "Bg2", "e6"] },
-        { "side": "Black", "name": "Benoni Defense", "defendsAgainst": "Queen's Pawn ", "moves": ["d4", "Nf6", "c4", "c5", "d5", "e6"] },
-        { "side": "Black", "name": "Modern Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "g6", "d4", "Bg7", "Nc3", "d6"] },
-        { "side": "Black", "name": "Philidor Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "e5", "Nf3", "d6", "d4", "Nd7"] },
-        { "side": "Black", "name": "Scandinavian Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "d5", "exd5", "Qxd5", "Nc3", "Qa5"] },
-        { "side": "White", "name": "Vienna Game", "defendsAgainst": "Open Games", "moves": ["e4", "e5", "Nc3", "Nf6", "f4", "d5"] },
-        { "side": "Black", "name": "Petrov's Defense", "defendsAgainst": "King's Pawn ", "moves": ["e4", "e5", "Nf3", "Nf6", "Nxe5", "d6"] }
-    ];
-
-    // Dark Mode
-    function updateDarkMode() {
-        const isDarkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
-        document.body.classList.toggle('dark-mode', isDarkModeEnabled);
-        darkModeToggle.textContent = isDarkModeEnabled ? 'Light Mode' : 'Dark Mode';
-    }
-
-    darkModeToggle.addEventListener('click', () => {
-        const isDarkModeEnabled = document.body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDarkModeEnabled ? 'disabled' : 'enabled');
-        updateDarkMode();
-    });
-
-    updateDarkMode();
-
-    // Completed Opening Buttons
+    
+    let currentFamily = ''; // Store users current selected opening family
     const practiceAgainButton = document.getElementById('practiceAgain');
     const newOpeningButton = document.getElementById('newOpening');
+    
+    practiceAgainButton.addEventListener('click', restartOpening);  
+    newOpeningButton.addEventListener('click', () => {
+        if (currentFamily) {
+            startNewOpening(currentFamily); // Pass the current family to startNewOpening
+        }
+    });
+    
+    let board = null;
+    let game = new Chess();
+    let currentOpening = {};
+    let currentMoveIndex = 0;
+    const moveDelay = 300;
 
-    practiceAgainButton.addEventListener('click', restartOpening);
-    newOpeningButton.addEventListener('click', startNewOpening);
+    // Fetch openings
+    let openingsData = {};
+    fetch('/data/openings.json')
+        .then(response => response.ok ? response.json() : Promise.reject('Failed to load openings'))
+        .then(data => openingsData = data)
+        .catch(error => {
+            console.error(error);
+            statusElement.textContent = "Error loading openings data.";
+        });
 
+    // Dark Mode
+    function initializeDarkMode() {
+        const savedDarkMode = localStorage.getItem('darkMode');
+        document.body.classList.toggle('dark-mode', savedDarkMode === 'enabled');
+        updateSidebarToggleColor();
+    }
 
+    function toggleDarkMode() {
+        const isDarkModeEnabled = !document.body.classList.contains('dark-mode');
+        document.body.classList.toggle('dark-mode', isDarkModeEnabled);
+        localStorage.setItem('darkMode', isDarkModeEnabled ? 'enabled' : 'disabled');
+        updateSidebarToggleColor();
+    }
+
+    function updateSidebarToggleColor() {
+        const mode = document.body.classList.contains('dark-mode') ? '--dark-mode-text' : '--light-mode-text';
+        sidebarToggle.style.color = getComputedStyle(document.documentElement).getPropertyValue(mode);
+    }
+
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+    initializeDarkMode();
+
+    // Restart opening
     function restartOpening() {
-        currentMoveIndex = 0; // Resets the index to start from the beginning of the opening
-        
-        resetToCurrentOpening(); // Resets the game to the start
-        
+        currentMoveIndex = 0;
+        resetToCurrentOpening();
         statusElement.textContent = "Try to complete the opening again!";
         practiceAgainButton.style.display = 'none';
         newOpeningButton.style.display = 'none';
-      
         board.orientation(currentOpening.side === "Black" ? 'black' : 'white');
-        
-        // Adjusted to immediately update the board position after reset, before deciding on the next action
         board.position(game.fen());
-        
-        // If the opening is for Black, play White's first move automatically. Otherwise, set up for the player's move.
         if (currentOpening.side === "Black") {
-            setTimeout(() => {
-                // Ensure sequence started from the beginning
-                playNextMove();
-            }, 100); // Small delay looks better
+            setTimeout(playNextMove, moveDelay);
         }
     }
-    
-    
-    function startNewOpening() {
-        selectRandomOpening();
-        statusElement.textContent = "Try a new opening!";
-        practiceAgainButton.style.display = 'none';
-        newOpeningButton.style.display = 'none';
-    }
 
-    function selectRandomOpening() {
-        const opening = openings[Math.floor(Math.random() * openings.length)];
-        currentOpening = opening;
-        game.reset();
-        if (currentOpening.side === "White") {
-            openingNameElement.textContent = `Opening: ${opening.name}`;
+    // Start new opening
+    function startNewOpening(openingFamily) {
+        currentFamily = openingFamily;
+        const familyKey = openingFamily.toLowerCase()
+            .replace(/\s+/g, '')    
+            .replace(/['-]/g, '')   
+            .replace(/ü/g, 'u');
+        const familyData = openingsData[familyKey];
+    
+        if (familyData) {
+            const randomVariation = familyData[Math.floor(Math.random() * familyData.length)];
+            currentOpening = randomVariation; 
+            game.reset(); 
+            currentMoveIndex = 0;
+    
+            openingNameElement.textContent = `Opening: ${openingFamily} - ${randomVariation.name}`;
+            statusElement.textContent = "Make your move";
+    
+            board.orientation(randomVariation.side === "Black" ? 'black' : 'white');
+            board.position(game.fen());
+    
+            practiceAgainButton.style.display = 'none';
+            newOpeningButton.style.display = 'none';
+    
+            if (randomVariation.side === "Black") {
+                setTimeout(() => {
+                    playNextMove(); 
+                }, 100);
+            }
         } else {
-            openingNameElement.textContent = `Opening: ${opening.name}. | Defends: ${opening.defendsAgainst}`; // Include whites opening if playing black
+            statusElement.textContent = "Opening family not found.";
         }
-            
-        currentMoveIndex = 0;
-        statusElement.textContent = "Make your move";
-    
-        // Set the board orientation based on the opening's side
-        if (opening.side === "Black") {
-            board.orientation('black'); // Orient the board for playing as Black
-            playNextMove(); // Computer plays the first move as White
-        } else {
-            board.orientation('white'); // Default orientation for playing as White
-        }
-    
-        board.position(game.fen());
     }
 
-    function initializeBoard() {
-        const config = {
-            draggable: true,
-            position: 'start',
-            onDrop: handleMove,
-            onSnapEnd: () => {
-                board.position(game.fen());
-            },
-        };
-        board = Chessboard('board', config);
-    }
-
+    // Handle piece moves
     function handleMove(source, target) {
-        let move = game.move({
-            from: source,
-            to: target,
-            promotion: 'q' // Assume queen promotion for simplicity
-        });
+        let move = game.move({ from: source, to: target, promotion: 'q' });
     
         if (move === null || move.san !== currentOpening.moves[currentMoveIndex]) {
-            game.undo(); // Undo the move
+            game.undo(); 
             statusElement.textContent = `Incorrect move! The correct move was ${currentOpening.moves[currentMoveIndex]}. Try again.`;
-            return 'snapback'; // Return the piece to its original position
+            return 'snapback';
         } else {
             currentMoveIndex++;
             updateStatusAfterMove();
     
-            // Check if there's a next move in the sequence and it's the computer's turn to play
-            if (currentMoveIndex < currentOpening.moves.length && ((currentOpening.side === "Black" && game.turn() === 'w') || (currentOpening.side === "White" && game.turn() === 'b'))) {
-                playNextMove();
-            }
+            setTimeout(() => {
+                board.position(game.fen());
+                if (shouldPlayNextMove()) {
+                    setTimeout(playNextMove, 10);
+                }
+            }, 100);
         }
     }
 
+    // Play next move for the computer
     function playNextMove() {
         if (currentMoveIndex < currentOpening.moves.length) {
             setTimeout(() => {
                 const move = game.move(currentOpening.moves[currentMoveIndex]);
                 if (move) {
-                    board.position(game.fen());
                     currentMoveIndex++;
+                    board.position(game.fen());
                     updateStatusAfterMove();
                 }
-            }, 200); // Slight delay to visually separate automatic moves
+            }, moveDelay);
         }
     }
-    
+
+    function shouldPlayNextMove() {
+        return currentMoveIndex < currentOpening.moves.length &&
+            ((currentOpening.side === "Black" && game.turn() === 'w') || 
+            (currentOpening.side === "White" && game.turn() === 'b'));
+    }
+
     function updateStatusAfterMove() {
         if (currentMoveIndex >= currentOpening.moves.length) {
-            statusElement.textContent = "Opening sequence completed.";
+            statusElement.textContent = `Opening sequence completed: ${currentOpening.name}`;
             practiceAgainButton.style.display = 'inline-block';
             newOpeningButton.style.display = 'inline-block';
         } else {
@@ -169,11 +152,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resetToCurrentOpening() {
-        game.reset(); // Resets the chess.js game state
-        // Don't apply moves here as resetting to the start
-        board.position('start'); // Set the board to the start position
+        game.reset();
+        board.position('start');
     }
 
     initializeBoard();
-    selectRandomOpening();
+
+    // Sidebar opening selections
+    document.querySelectorAll('[data-opening]').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            startNewOpening(button.dataset.opening);
+        });
+    });
+
+    // Sidebar toggle functionality
+    const sidebar = document.getElementById('sidebar');
+    const container = document.getElementById('gameContainer');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.style.left = sidebar.style.left === '0px' ? '-250px' : '0px';
+        container.classList.toggle('shifted');
+        sidebarToggle.classList.toggle('active');
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
+            sidebar.style.left = '-250px'; 
+            updateSidebarToggleColor(); // Update the text color when closing the sidebar
+        }
+    });
+
+    sidebar.style.left = '-250px';
 });
