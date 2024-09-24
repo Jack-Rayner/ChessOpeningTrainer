@@ -5,6 +5,11 @@
     --sidebar-bg: #363434;
 }
 
+/* Reusable spacing class */
+.spacing-bottom-lg {
+    margin-bottom: 30px; /* Adjust as needed */
+}
+
 /* General Body and Layout Styles */
 html, body {
     height: 100%;
@@ -23,7 +28,7 @@ body {
 
 /* Menu text color when sidebar is open */
 body.is-sidebar-open #sidebarToggle {
-    color: white; /* Simplified, avoid using !important */
+    color: white;
 }
 
 /* Game Container */
@@ -37,11 +42,6 @@ body.is-sidebar-open #sidebarToggle {
     margin-left: 0;
     transition: margin-left 0.5s ease;
 }
-
-/* Ensure this class shifts the container */
-/* #gameContainer.is-shifted {
-    margin-left: 250px; 
-} */
 
 /* Chessboard */
 #board {
@@ -100,8 +100,8 @@ body.is-sidebar-open #sidebarToggle {
     outline-offset: 2px;
 }
 
-/* Sidebar */
-#sidebar {
+/* Sidebar Layout */
+.sidebar-layout {
     height: 100%;
     width: 250px;
     position: fixed;
@@ -111,55 +111,48 @@ body.is-sidebar-open #sidebarToggle {
     color: white;
     overflow-x: hidden;
     transition: left 0.5s ease; /* Animates when the sidebar opens */
-    padding-top: 50px;
+    padding-top: 80px; /* Increase this to push the menu items below the toggle */
     z-index: 999;
 }
 
-#sidebar.is-open {
+.sidebar-layout.is-open {
     left: 0; /* When open, sidebar is visible */
 }
 
-/* Sidebar Header and Links */
-#sidebar h2 {
-    font-size: 20px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 15px;
-    text-align: left;
-    /* font-weight: 600; */
-    font-family: 'Futura Std', sans-serif;
-}
-
-#sidebar a {
-    padding: 10px 15px;
+/* Sidebar Menu Items */
+.menu-item {
+    padding: 8px 15px; /* Decrease padding for less space between items */
     text-decoration: none;
     font-size: 18px;
     color: #fff;
     display: block;
-    transition: 0.3s;
+    transition: background-color 0.3s;
     text-align: left;
     font-family: 'Futura Std', sans-serif;
+    margin-bottom: 5px; /* Decrease the margin between menu items */
 }
 
-#sidebar a:hover {
+.menu-item:hover {
     background-color: #555352;
 }
 
 /* Sidebar Toggle Button */
 #sidebarToggle {
     position: absolute;
-    top: 20px;  
+    top: 30px;  
     left: 15px;
     font-size: 24px;
+    font-weight: 500;
     cursor: pointer;
     color: var(--light-mode-text);
     z-index: 1000;
-    transition: color 0.3s ease;
+    transition: color 0.4s ease;
+    /* Removed padding-bottom and margin-bottom */
 }
 
 /* Dark Mode */
 .dark-mode #sidebarToggle {
-    color: var(--dark-mode-text); /* In dark mode, switch the toggle color */
+    color: var(--dark-mode-text);
 }
 
 .dark-mode {
