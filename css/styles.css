@@ -5,7 +5,11 @@
     --sidebar-bg: #363434;
 }
 
-/* General Body Styles */
+/* General Body and Layout Styles */
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: 'Futura Std', sans-serif;
     font-size: 1rem;
@@ -15,6 +19,36 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+/* Menu text color when sidebar is open */
+body.is-sidebar-open #sidebarToggle {
+    color: white; /* Simplified, avoid using !important */
+}
+
+/* Game Container */
+#gameContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    max-width: 800px;
+    padding: 30px;
+    margin-left: 0;
+    transition: margin-left 0.5s ease;
+}
+
+/* Ensure this class shifts the container */
+/* #gameContainer.is-shifted {
+    margin-left: 250px; 
+} */
+
+/* Chessboard */
+#board {
+    margin: 0 auto;
+    border: 2px solid var(--light-mode-text);
+    box-sizing: border-box;
+    margin-bottom: 35px;
 }
 
 /* Title */
@@ -27,24 +61,6 @@ body {
     margin-bottom: 25px;
     font-weight: normal;
     letter-spacing: 1px;
-}
-
-/* Board and Game Container */
-#gameContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    max-width: 800px;
-    padding: 30px;
-    transition: margin-left 0.5s ease;
-}
-
-#board {
-    margin: 0 auto;
-    border: 2px solid var(--light-mode-text);
-    box-sizing: border-box;
-    margin-bottom: 35px;
 }
 
 /* Status and Opening Name */
@@ -84,33 +100,36 @@ body {
     outline-offset: 2px;
 }
 
-/* Sidebar Styles */
+/* Sidebar */
 #sidebar {
     height: 100%;
     width: 250px;
     position: fixed;
-    left: -250px;
+    left: -250px; /* Sidebar starts hidden */
     top: 0;
     background-color: var(--sidebar-bg);
     color: white;
     overflow-x: hidden;
-    transition: 0.5s ease;
+    transition: left 0.5s ease; /* Animates when the sidebar opens */
     padding-top: 50px;
     z-index: 999;
 }
 
-/* Sidebar header "Choose Opening" */
+#sidebar.is-open {
+    left: 0; /* When open, sidebar is visible */
+}
+
+/* Sidebar Header and Links */
 #sidebar h2 {
     font-size: 20px;
-    margin-top: 50;
-    margin-bottom: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     margin-left: 15px;
     text-align: left;
-    font-weight: 600;
+    /* font-weight: 600; */
     font-family: 'Futura Std', sans-serif;
 }
 
-/* Sidebar menu items */
 #sidebar a {
     padding: 10px 15px;
     text-decoration: none;
@@ -126,11 +145,6 @@ body {
     background-color: #555352;
 }
 
-/* When the menu is open, turn the text white */
-#sidebarToggle.active {
-    color: var(--dark-mode-text);
-}
-
 /* Sidebar Toggle Button */
 #sidebarToggle {
     position: absolute;
@@ -143,32 +157,11 @@ body {
     transition: color 0.3s ease;
 }
 
+/* Dark Mode */
 .dark-mode #sidebarToggle {
-    color: var(--dark-mode-text);
+    color: var(--dark-mode-text); /* In dark mode, switch the toggle color */
 }
 
-/* Dark Mode Toggle Button */
-#darkModeToggle {
-    font-family: 'Futura', sans-serif;
-    font-size: 1.2rem;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    cursor: pointer;
-    background-color: #ededed;
-    color: var(--light-mode-text);
-    padding: 14px 21px;
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.2s ease, color 0.1s ease;
-}
-
-.dark-mode #darkModeToggle {
-    background-color: #333;
-    color: var(--dark-mode-text);
-}
-
-/* Dark Mode Styles */
 .dark-mode {
     background-color: #1e1e1e;
     color: var(--dark-mode-text);
@@ -199,26 +192,23 @@ body {
     color: var(--dark-mode-text);
 }
 
-.dark-mode button {
+/* Dark Mode Toggle */
+#darkModeToggle {
+    font-family: 'Futura', sans-serif;
+    font-size: 1.2rem;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+    background-color: #ededed;
+    color: var(--light-mode-text);
+    padding: 14px 21px;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.2s ease, color 0.1s ease;
+}
+
+.dark-mode #darkModeToggle {
     background-color: #333;
-}
-
-/* Body and Game Container */
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#gameContainer {
-    margin-left: 0;
-    transition: margin-left 0.5s ease;
-}
-
-#gameContainer.sidebarOpen {
-    margin-left: 250px;
-}
-
-html, body {
-    height: 100%;
+    color: var(--dark-mode-text);
 }

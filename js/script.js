@@ -2,15 +2,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusElement = document.getElementById('status');
     const openingNameElement = document.getElementById('openingName');
     const darkModeToggle = document.getElementById('darkModeToggle');
-    
-    let currentFamily = ''; // Store users current selected opening family
+
+    let currentFamily = ''; 
     const practiceAgainButton = document.getElementById('practiceAgain');
     const newOpeningButton = document.getElementById('newOpening');
     
     practiceAgainButton.addEventListener('click', restartOpening);  
     newOpeningButton.addEventListener('click', () => {
         if (currentFamily) {
-            startNewOpening(currentFamily); // Pass the current family to startNewOpening
+            startNewOpening(currentFamily);
         }
     });
     
@@ -23,28 +23,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch openings
     let openingsData = {};
     fetch('./data/openings.json')
-    .then(response => {
-        if (!response.ok) throw new Error('Failed to load openings');
-        return response.json();
-    })
-    .then(data => openingsData = data)
-    .catch(error => {
-        console.error(error);
-        statusElement.textContent = "Failed to load openings. Please try again later.";
-    });
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to load openings');
+            return response.json();
+        })
+        .then(data => openingsData = data)
+        .catch(error => {
+            console.error(error);
+            statusElement.textContent = "Error loading openings data.";
+        });
+    
+    // Sidebar toggle functionality
+    const sidebar = document.getElementById('sidebar');
+    const container = document.getElementById('gameContainer');
+    const sidebarToggle = document.getElementById('sidebarToggle');
 
-    // Dark Mode
+    // Dark Mode updateSidebarToggleColor
     function initializeDarkMode() {
-        const isDarkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
-        document.body.classList.toggle('dark-mode', isDarkModeEnabled);
+        const savedDarkMode = localStorage.getItem('darkMode');
+        document.body.classList.toggle('dark-mode', savedDarkMode === 'enabled');
     }
-   
-    darkModeToggle.addEventListener('click', () => {
-        const isDarkModeEnabled = !document.body.classList.contains('dark-mode');
-        document.body.classList.toggle('dark-mode', isDarkModeEnabled);
+
+    function toggleDarkMode() {
+        const isDarkModeEnabled = document.body.classList.toggle('dark-mode');
         localStorage.setItem('darkMode', isDarkModeEnabled ? 'enabled' : 'disabled');
-    });
-   
+    }
+
+    darkModeToggle.addEventListener('click', toggleDarkMode);
     initializeDarkMode();
 
     // Restart opening
@@ -63,17 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Start new opening
     function startNewOpening(openingFamily) {
-        currentFamily = openingFamily;  // Remember the selected family
-        const familyKey = openingFamily.toLowerCase()
-            .replace(/\s+/g, '')    
-            .replace(/['-]/g, '')   
-            .replace(/ü/g, 'u');
+        currentFamily = openingFamily;
+        const familyKey = openingFamily.toLowerCase().replace(/\s+/g, '').replace(/['-]/g, '').replace(/ü/g, 'u');
         const familyData = openingsData[familyKey];
     
         if (familyData) {
             const randomVariation = familyData[Math.floor(Math.random() * familyData.length)];
-            currentOpening = randomVariation; 
-            game.reset(); 
+            currentOpening = randomVariation;
+            game.reset();
             currentMoveIndex = 0;
     
             openingNameElement.textContent = `Opening: ${openingFamily} - ${randomVariation.name}`;
@@ -86,9 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             newOpeningButton.style.display = 'none';
     
             if (randomVariation.side === "Black") {
-                setTimeout(() => {
-                    playNextMove(); 
-                }, 100);
+                setTimeout(playNextMove, 100);
             }
         } else {
             statusElement.textContent = "Opening family not found.";
@@ -99,22 +99,20 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleMove(source, target) {
         let move = game.move({ from: source, to: target, promotion: 'q' });
     
-        // Validate the move against the current opening variation
         if (move === null || move.san !== currentOpening.moves[currentMoveIndex]) {
             game.undo(); 
             statusElement.textContent = `Incorrect move! The correct move was ${currentOpening.moves[currentMoveIndex]}. Try again.`;
-            return 'snapback';  // Snap back if the move is incorrect
+            return 'snapback';
         } else {
-            currentMoveIndex++;  // Move to the next one in the variation
+            currentMoveIndex++;
             updateStatusAfterMove();
     
-            // Delay board update slightly after the move to avoid animation conflicts
             setTimeout(() => {
-                board.position(game.fen());  // Update board position after the user's move
+                board.position(game.fen());
                 if (shouldPlayNextMove()) {
-                    setTimeout(playNextMove, 10);  // Delay the computer's next move slightly
+                    setTimeout(playNextMove, 10);
                 }
-            }, 10);  // Short delay for smooth animation
+            }, 100);
         }
     }
 
@@ -173,37 +171,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Sidebar toggle functionality
-    const sidebar = document.getElementById('sidebar');
-    const container = document.getElementById('gameContainer');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-
-    function toggleSidebar() {
-        const isOpen = sidebar.style.left === '0px';
-        sidebar.style.left = isOpen ? '-250px' : '0px';
-        container.classList.toggle('shifted', !isOpen);
-        sidebarToggle.classList.toggle('active', !isOpen);
-    }   
+    sidebarToggle.addEventListener('click', () => {
+        const isOpen = sidebar.classList.contains('is-open');
+        
+        // Toggle 'open' state for sidebar
+        sidebar.classList.toggle('is-open'); 
     
-    sidebarToggle.addEventListener('click', toggleSidebar);
+        // Toggle shift for container
+        container.classList.toggle('is-shifted', !isOpen);
+    
+        // Toggle 'is-sidebar-open' on the body
+        document.body.classList.toggle('is-sidebar-open', !isOpen);
+    });
+    
+    //close the sidebar when clicking outside
     document.addEventListener('click', (event) => {
         if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
-            sidebar.style.left = '-250px';
+            sidebar.classList.remove('is-open'); // Close sidebar
+            container.classList.remove('is-shifted'); // Remove shifted class
+            document.body.classList.remove('is-sidebar-open'); // Remove 'is-sidebar-open' class from body
         }
     });
-
-    document.addEventListener('click', function(event) {
-        if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
-            sidebar.style.left = '-250px'; // Close sidebar
     
-            // Update the text color based on the current mode
-            if (document.body.classList.contains('dark-mode')) {
-                sidebarToggle.style.color = getComputedStyle(document.documentElement).getPropertyValue('--dark-mode-text');
-            } else {
-                sidebarToggle.style.color = getComputedStyle(document.documentElement).getPropertyValue('--light-mode-text');
-            }
-        }
-    });
-
-    sidebar.style.left = '-250px'; // Ensure the sidebar starts closed
 });
