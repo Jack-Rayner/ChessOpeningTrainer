@@ -40,6 +40,7 @@ body.is-sidebar-open #sidebarToggle {
     max-width: 800px;
     padding: 30px;
     margin-left: 0;
+    margin-top: 40px;
     transition: margin-left 0.5s ease;
 }
 
@@ -57,9 +58,9 @@ body.is-sidebar-open #sidebarToggle {
     font-size: 36px;
     color: var(--light-mode-text);
     text-align: center;
-    margin-top: 0px;
-    margin-bottom: 25px;
-    font-weight: normal;
+    margin-top: -40px;
+    margin-bottom: 65px;
+    font-weight: 400;
     letter-spacing: 1px;
 }
 
@@ -121,7 +122,7 @@ body.is-sidebar-open #sidebarToggle {
 
 /* Sidebar Menu Items */
 .menu-item {
-    padding: 8px 15px; /* Decrease padding for less space between items */
+    padding: 8px 15px;
     text-decoration: none;
     font-size: 18px;
     color: #fff;
@@ -129,17 +130,62 @@ body.is-sidebar-open #sidebarToggle {
     transition: background-color 0.3s;
     text-align: left;
     font-family: 'Futura Std', sans-serif;
-    margin-bottom: 5px; /* Decrease the margin between menu items */
+    margin-bottom: 5px;
 }
 
-.menu-item:hover {
-    background-color: #555352;
+.dropdown > span {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-top: 15px;
+    font-size: 22px;          /* Slightly increase the size */
+    /* font-weight: ; */
+    letter-spacing: 1px;      /* Add letter spacing */
+    color: #f0f0f0;           /* Ensure good contrast with the background */
+}
+
+/* Resize the icon and adjust spacing */
+.dropdown > span .icon {
+    width: 30px;    /* Adjust size to fit */
+    height: auto;   /* Maintain aspect ratio */
+    margin-right: 10px; /* Add space between the icon and text */
+}
+
+
+
+/* Dropdown content starts collapsed and expands on hover */
+.dropdown-content {
+    max-height: 0; /* Start collapsed */
+    overflow: hidden; /* Hide content when collapsed */
+    transition: max-height 0.4s ease; /* Add smooth transition */
+    padding-left: 10px; /* Optional for indentation */
+}
+
+.dropdown:hover .dropdown-content {
+    max-height: 500px; /* Expand on hover with animation */
+    transition: max-height 0.4s ease;
+}
+
+/* Ensure individual items are visible with opacity transitions */
+.dropdown-content .menu-item {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.dropdown:hover .dropdown-content .menu-item {
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+/* Hover effect strictly limited to individual items */
+.dropdown-content .menu-item:hover {
+    background-color: #555352; /* Highlight only the hovered item */
 }
 
 /* Sidebar Toggle Button */
 #sidebarToggle {
     position: absolute;
-    top: 30px;  
+    top: 30px;
     left: 15px;
     font-size: 24px;
     font-weight: 500;
@@ -147,7 +193,6 @@ body.is-sidebar-open #sidebarToggle {
     color: var(--light-mode-text);
     z-index: 1000;
     transition: color 0.4s ease;
-    /* Removed padding-bottom and margin-bottom */
 }
 
 /* Dark Mode */
