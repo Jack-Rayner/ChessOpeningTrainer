@@ -70,9 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function startNewOpening(openingFamily) {
         currentFamily = openingFamily;
         const familyKey = openingFamily.toLowerCase().replace(/\s+/g, '').replace(/['-]/g, '').replace(/ü/g, 'u');
+        console.log(`Formatted family key: ${familyKey}`); // Log the family key
         const familyData = openingsData[familyKey];
     
         if (familyData) {
+            console.log(`Found opening data for: ${familyKey}`); // Log if data is found
             const randomVariation = familyData[Math.floor(Math.random() * familyData.length)];
             currentOpening = randomVariation;
             game.reset();
@@ -91,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(playNextMove, 100);
             }
         } else {
+            console.error(`Opening family not found: ${familyKey}`); // Log if no data found
             statusElement.textContent = "Opening family not found.";
         }
     }
@@ -165,8 +168,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sidebar opening selections
     document.querySelectorAll('[data-opening]').forEach(button => {
+        console.log(`Found button: ${button.dataset.opening}`);
         button.addEventListener('click', (e) => {
             e.preventDefault();
+            console.log(`Opening family clicked: ${button.dataset.opening}`);
             startNewOpening(button.dataset.opening);
         });
     });
