@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Chess Opening Drills</title>
-    <!-- Link to the external stylesheet for the chessboard library -->
     <link rel="stylesheet" href="css/chessboard-1.0.0.css" />
-    <!-- Link to your custom styles -->
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link href="https://fonts.cdnfonts.com/css/futura-std-4" rel="stylesheet">
@@ -13,7 +11,7 @@
     <link rel="icon" type="image/x-icon" href="img/android-chrome-512x512.png">
 </head>
 <body>
-    <!-- Toggle button for the sidebar -->
+    <!-- Toggle button for sidebar -->
     <span id="sidebarToggle">☰ Choose Opening</span>
     
     <!-- Sidebar for choosing opening families -->
@@ -49,13 +47,13 @@
                 <a href="#" class="menu-item" data-opening="Slav">Slav Defense</a>
                 <a href="#" class="menu-item" data-opening="Nimzo-Indian">Nimzo-Indian Defense</a>
                 <a href="#" class="menu-item" data-opening="Grünfeld">Grünfeld Defense</a>
-                <a href="#" class="menu-item" data-opening="Alekhine's">Alekhine's Defense</a>
+                <a href="#" class="menu-item" data-opening="Alekhine">Alekhine's Defense</a>
                 <a href="#" class="menu-item" data-opening="Dutch">Dutch Defense</a>
                 <a href="#" class="menu-item" data-opening="Benoni">Benoni Defense</a>
                 <a href="#" class="menu-item" data-opening="Modern">Modern Defense</a>
                 <a href="#" class="menu-item" data-opening="Philidor">Philidor Defense</a>
                 <a href="#" class="menu-item" data-opening="Scandinavian">Scandinavian Defense</a>
-                <a href="#" class="menu-item" data-opening="Petrov's">Petrov's Defense</a>
+                <a href="#" class="menu-item" data-opening="Petrov">Petrov's Defense</a>
             </div>
         </div>
     </div>
@@ -74,15 +72,18 @@
         </div>
     </div>
 
-    <button id="darkModeToggle">Dark Mode</button>
+     <!-- Dark Mode Toggle Button -->
+     <div class="tdnn">
+        <div class="moon"></div>
+    </div>
     
-    <!-- Include the chess.js library -->
+    <!-- chess.js library -->
     <script src="js/chess.js"></script>
     
-    <!-- Include the chessboard.js library -->
+    <!-- chessboard.js library -->
     <script src="js/chessboard-1.0.0.js"></script>
     
-    <!-- Include your custom script -->
+    <!-- my script -->
     <script src="js/script.js"></script>
 
     <!-- JavaScript for toggling sidebar -->

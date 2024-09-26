@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const statusElement = document.getElementById('status');
     const openingNameElement = document.getElementById('openingName');
-    const darkModeToggle = document.getElementById('darkModeToggle');
 
     let currentFamily = ''; 
     const practiceAgainButton = document.getElementById('practiceAgain');
@@ -13,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
             startNewOpening(currentFamily);
         }
     });
-    
+
     let board = null;
     let game = new Chess();
     let currentOpening = {};
@@ -32,24 +31,31 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
             statusElement.textContent = "Error loading openings data.";
         });
-    
+
     // Sidebar toggle functionality
     const sidebar = document.getElementById('sidebar');
     const container = document.getElementById('gameContainer');
     const sidebarToggle = document.getElementById('sidebarToggle');
 
-    // Dark Mode updateSidebarToggleColor
+    // Dark Mode Logic - Consolidated for Sun/Moon Toggle
     function initializeDarkMode() {
         const savedDarkMode = localStorage.getItem('darkMode');
-        document.body.classList.toggle('dark-mode', savedDarkMode === 'enabled');
+        const isDarkModeEnabled = savedDarkMode === 'enabled';
+        document.body.classList.toggle('dark-mode', isDarkModeEnabled);
+        document.querySelector('.moon').classList.toggle('sun', isDarkModeEnabled);
     }
 
     function toggleDarkMode() {
         const isDarkModeEnabled = document.body.classList.toggle('dark-mode');
+        document.querySelector('.moon').classList.toggle('sun', isDarkModeEnabled);  // Moon to sun toggle
+        document.querySelector('.tdnn').classList.toggle('day', isDarkModeEnabled);  // Toggle background transition
         localStorage.setItem('darkMode', isDarkModeEnabled ? 'enabled' : 'disabled');
     }
+    
 
-    darkModeToggle.addEventListener('click', toggleDarkMode);
+    // Use the Sun/Moon button for Dark Mode Toggle
+    document.querySelector('.tdnn').addEventListener('click', toggleDarkMode);
+
     initializeDarkMode();
 
     // Restart opening
@@ -70,11 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function startNewOpening(openingFamily) {
         currentFamily = openingFamily;
         const familyKey = openingFamily.toLowerCase().replace(/\s+/g, '').replace(/['-]/g, '').replace(/ü/g, 'u');
-        console.log(`Formatted family key: ${familyKey}`); // Log the family key
         const familyData = openingsData[familyKey];
     
         if (familyData) {
-            console.log(`Found opening data for: ${familyKey}`); // Log if data is found
             const randomVariation = familyData[Math.floor(Math.random() * familyData.length)];
             currentOpening = randomVariation;
             game.reset();
@@ -93,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(playNextMove, 100);
             }
         } else {
-            console.error(`Opening family not found: ${familyKey}`); // Log if no data found
+            console.error(`Opening family not found: ${familyKey}`);
             statusElement.textContent = "Opening family not found.";
         }
     }
@@ -103,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let move = game.move({ from: source, to: target, promotion: 'q' });
     
         if (move === null || move.san !== currentOpening.moves[currentMoveIndex]) {
-            game.undo(); 
+            game.undo();
             statusElement.textContent = `Incorrect move! The correct move was ${currentOpening.moves[currentMoveIndex]}. Try again.`;
             return 'snapback';
         } else {
@@ -168,10 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sidebar opening selections
     document.querySelectorAll('[data-opening]').forEach(button => {
-        console.log(`Found button: ${button.dataset.opening}`);
         button.addEventListener('click', (e) => {
             e.preventDefault();
-            console.log(`Opening family clicked: ${button.dataset.opening}`);
             startNewOpening(button.dataset.opening);
         });
     });
@@ -180,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const isOpen = sidebar.classList.contains('is-open');
         
         // Toggle 'open' state for sidebar
-        sidebar.classList.toggle('is-open'); 
+        sidebar.classList.toggle('is-open');
     
         // Toggle shift for container
         container.classList.toggle('is-shifted', !isOpen);
@@ -189,13 +191,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('is-sidebar-open', !isOpen);
     });
     
-    //close the sidebar when clicking outside
+    // Close the sidebar when clicking outside
     document.addEventListener('click', (event) => {
         if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
-            sidebar.classList.remove('is-open'); // Close sidebar
-            container.classList.remove('is-shifted'); // Remove shifted class
-            document.body.classList.remove('is-sidebar-open'); // Remove 'is-sidebar-open' class from body
+            sidebar.classList.remove('is-open');
+            container.classList.remove('is-shifted');
+            document.body.classList.remove('is-sidebar-open');
         }
     });
-    
+    document.querySelector('.tdnn').classList.toggle('day', isDarkModeEnabled);
 });
