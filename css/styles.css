@@ -237,6 +237,13 @@ body.dark-mode #newOpening:hover {
     transition: color 0.4s ease;
 }
 
+#sidebarToggle:hover + .sidebar-layout,
+.sidebar-layout:hover {
+    left: 0; /* Sidebar slides in when hovering over the trigger or the menu */
+    color: var(--dark-mode-text);
+}
+
+
 body.dark-mode #sidebarToggle {
     color: var(--dark-mode-text);
 }

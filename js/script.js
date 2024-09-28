@@ -178,26 +178,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    sidebarToggle.addEventListener('click', () => {
-        const isOpen = sidebar.classList.contains('is-open');
-        
-        // Toggle 'open' state for sidebar
-        sidebar.classList.toggle('is-open');
-    
-        // Toggle shift for container
-        container.classList.toggle('is-shifted', !isOpen);
-    
-        // Toggle 'is-sidebar-open' on the body
-        document.body.classList.toggle('is-sidebar-open', !isOpen);
+    // Sidebar hover functionality to open
+    sidebarToggle.addEventListener('mouseenter', () => {
+        sidebar.classList.add('is-open');
+        document.body.classList.add('is-sidebar-open');
+        sidebarToggle.style.color = 'white'; // Ensure the text color stays white when hovered
     });
-    
-    // Close the sidebar when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
-            sidebar.classList.remove('is-open');
-            container.classList.remove('is-shifted');
-            document.body.classList.remove('is-sidebar-open');
-        }
+
+    // Sidebar hover functionality to close
+    sidebar.addEventListener('mouseleave', () => {
+        sidebar.classList.remove('is-open');
+        document.body.classList.remove('is-sidebar-open');
+        sidebarToggle.style.color = ''; // Reset text color when the sidebar is closed
     });
     document.querySelector('.tdnn').classList.toggle('day', isDarkModeEnabled);
 });
