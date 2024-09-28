@@ -17,7 +17,7 @@
 
 /* Reusable spacing class */
 .spacing-bottom-lg {
-    margin-bottom: 30px; /* Adjust as needed */
+    margin-bottom: 30px;
 }
 
 /* General Body and Layout Styles */
@@ -138,7 +138,7 @@ body.dark-mode #status {
 body.dark-mode #practiceAgain,
 body.dark-mode #newOpening {
     background-color: #f0f0f0;
-    color: #44688a;
+    color: var(--darkbg);
 }
 
 body.dark-mode #practiceAgain:hover,
@@ -151,18 +151,18 @@ body.dark-mode #newOpening:hover {
     height: 100%;
     width: 250px;
     position: fixed;
-    left: -250px; /* Sidebar starts hidden */
+    left: -250px;
     top: 0;
     background-color: var(--sidebar-bg);
     color: white;
     overflow-x: hidden;
-    transition: left 0.5s ease; /* Animates when the sidebar opens */
-    padding-top: 80px; /* Increase this to push the menu items below the toggle */
+    transition: left 0.5s ease;
+    padding-top: 80px;
     z-index: 999;
 }
 
 .sidebar-layout.is-open {
-    left: 0; /* When open, sidebar is visible */
+    left: 0;
 }
 
 /* Sidebar Menu Items */
@@ -183,28 +183,26 @@ body.dark-mode #newOpening:hover {
     align-items: center;
     margin-bottom: 10px;
     margin-top: 15px;
-    font-size: 22px;          /* Slightly increase the size */
-    letter-spacing: 1px;      /* Add letter spacing */
-    color: #f0f0f0;           /* Ensure good contrast with the background */
+    font-size: 22px;         
+    letter-spacing: 1px;     
+    color: #f0f0f0;        
 }
 
-/* Resize the icon and adjust spacing */
 .dropdown > span .icon {
-    width: 30px;    /* Adjust size to fit */
-    height: auto;   /* Maintain aspect ratio */
-    margin-right: 10px; /* Add space between the icon and text */
+    width: 30px;
+    height: auto;
+    margin-right: 10px;
 }
 
-/* Dropdown content starts collapsed and expands on hover */
 .dropdown-content {
-    max-height: 0; /* Start collapsed */
-    overflow: hidden; /* Hide content when collapsed */
-    transition: max-height 0.4s ease; /* Add smooth transition */
-    padding-left: 10px; /* Optional for indentation */
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    padding-left: 10px;
 }
 
 .dropdown:hover .dropdown-content {
-    max-height: 500px; /* Expand on hover with animation */
+    max-height: 500px;
     transition: max-height 0.4s ease;
 }
 
@@ -221,7 +219,7 @@ body.dark-mode #newOpening:hover {
 
 /* Hover effect strictly limited to individual items */
 .dropdown-content .menu-item:hover {
-    background-color: #555352; /* Highlight only the hovered item */
+    background-color: #555352;
 }
 
 /* Sidebar Toggle Button */
@@ -239,7 +237,7 @@ body.dark-mode #newOpening:hover {
 
 #sidebarToggle:hover + .sidebar-layout,
 .sidebar-layout:hover {
-    left: 0; /* Sidebar slides in when hovering over the trigger or the menu */
+    left: 0;
     color: var(--dark-mode-text);
 }
 
