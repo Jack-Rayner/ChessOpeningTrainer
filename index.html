@@ -85,30 +85,5 @@
     
     <!-- my script -->
     <script src="js/script.js"></script>
-
-    <!-- JavaScript for toggling sidebar -->
-    <script>
-        // Sidebar toggle functionality
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            const sidebar = document.getElementById('sidebar');
-            const container = document.getElementById('gameContainer');
-
-            // Toggle sidebar open/closed
-            if (sidebar.classList.contains('open')) {
-                sidebar.classList.remove('open'); // Close sidebar
-                container.classList.remove('shifted'); // Center board
-            } else {
-                sidebar.classList.add('open'); // Open sidebar
-                container.classList.add('shifted'); // Shift board
-            }
-        });
-
-        // Function to handle selecting an opening family
-        function selectOpeningByFamily(familyName) {
-            // Function implementation from the previous code
-            console.log(`Selected opening family: ${familyName}`);
-            // Add your logic to load the selected opening
-        }
-    </script>
 </body>
 </html>

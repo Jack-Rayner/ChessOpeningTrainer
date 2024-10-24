@@ -182,14 +182,12 @@ document.addEventListener('DOMContentLoaded', () => {
     sidebarToggle.addEventListener('mouseenter', () => {
         sidebar.classList.add('is-open');
         document.body.classList.add('is-sidebar-open');
-        sidebarToggle.style.color = 'white'; // Ensure the text color stays white when hovered
     });
 
     // Sidebar hover functionality to close
     sidebar.addEventListener('mouseleave', () => {
         sidebar.classList.remove('is-open');
         document.body.classList.remove('is-sidebar-open');
-        sidebarToggle.style.color = ''; // Reset text color when the sidebar is closed
     });
     document.querySelector('.tdnn').classList.toggle('day', isDarkModeEnabled);
 });

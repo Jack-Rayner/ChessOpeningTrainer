@@ -51,18 +51,978 @@
             "side": "Black"
         }
     ],
+
+
     "ruylopez": [
         {
-            "name": "Closed Defense",
-            "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7"],
-            "side": "White"
+        "name": "Closed Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7"],
+        "side": "White"
         },
         {
-            "name": "Open Defense",
-            "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4"],
-            "side": "White"
+        "name": "Open Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4"],
+        "side": "White"
+        },
+        {
+        "name": "Nuernberg variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "f6"],
+        "side": "White"
+        },
+        {
+        "name": "Pollock Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Na5"],
+        "side": "White"
+        },
+        {
+        "name": "Lucena Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Be7"],
+        "side": "White"
+        },
+        {
+        "name": "Vinogradov variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Qe7"],
+        "side": "White"
+        },
+        {
+        "name": "Brentano Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "g5"],
+        "side": "White"
+        },
+        {
+        "name": "Fianchetto Defense (Smyslov/Barnes)",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "g6"],
+        "side": "White"
+        },
+        {
+        "name": "Cozio Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nge7"],
+        "side": "White"
+        },
+        {
+        "name": "Bird's Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nd4"],
+        "side": "White"
+        },
+        {
+        "name": "Old Steinitz Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "d6"],
+        "side": "White"
+        },
+        {
+        "name": "Schliemann Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "f5"],
+        "side": "White"
+        },
+        {
+        "name": "Classical (Cordel) Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Bc5"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6"],
+        "side": "White"
+        },
+        {
+        "name": "Morphy Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6"],
+        "side": "White"
+        },
+        {
+        "name": "Maybe Benoni",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "c5"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Mortimer variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "d3", "Ne7"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Open variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4"],
+        "side": "White"
+        },
+        {
+        "name": "Closed Berlin Defense, Bernstein variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "d6", "d4", "Bd7", "Nc3", "Be7", "Bg5"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Pillsbury variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4", "d4", "Be7", "Qe2", "Nd6", "b3"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Rubinstein variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3", "Bd7", "d4", "Nge7"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Three Knights variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "Nc3"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Fianchetto (Bronstein) variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3", "Bd7", "d4", "g6"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall Counter-Attack",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "b5", "Bb3", "O-O", "c3", "d5"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall Counter-Attack, Kevitz variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "c6"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall Counter-Attack, Spassky variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "Bd6", "Re1", "Qh4", "g3", "Qh3"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall Counter-Attack, Herman Steiner variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "e4"],
+        "side": "White"
+        },
+        {
+        "name": "Breyer Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d6", "h3", "Nb8"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Anderssen variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "d3", "d6", "Bxc6+"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Kaufmann variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "d3", "Bc5", "Be3"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Hedgehog variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "d6", "d4", "Bd7", "Nc3", "Be7"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Tarrasch Trap variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "d6", "d4", "Bd7", "Nc3", "Be7", "Re1", "O-O"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, 4.O-O variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Beverwijk variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Bc5"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, 4... d6 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "d6"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Wolf variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "d6", "d4", "Bd7", "Nc3", "exd4"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Open variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, l'Hermet variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4", "d4", "Nd6", "dxe5"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Showalter variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4", "d4", "Nd6", "Ba4"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, 5...Be7 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4", "d4", "Be7"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Rio de Janeiro variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4", "d4", "Be7", "Qe2", "Nd6", "Bxc6", "bxc6", "dxe5", "Nb7", "Nc3", "O-O", "Re1", "Nc5", "Nd4", "Ne6", "Be3", "Nxd4", "Bxd4", "c5"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Pillsbury variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4", "d4", "Be7", "Qe2", "Nd6", "Bxc6", "bxc6", "dxe5", "Nb7", "b3"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Winawer Attack variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4", "d4", "Be7", "Qe2", "Nd6", "Bxc6", "bxc6", "dxe5", "Nb7", "Nd4"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Cordel variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4", "d4", "Be7", "Qe2", "Nd6", "Bxc6", "bxc6", "dxe5", "Nf5"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Trifunovic variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4", "d4", "Be7", "Qe2", "d5"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Minckwitz variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4", "d4", "Be7", "Qe2", "Nd6", "dxe5"],
+        "side": "White"
+        },
+        {
+        "name": "Berlin Defense, Rosenthal variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4", "d4", "a6"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, Alekhine variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "d4", "exd4", "Qxd4", "Qxd4", "Nxd4", "Bd7"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, Keres variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "Nc3"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, Romanovsky variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "Nc3", "f6", "d3"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, 5.O-O variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "O-O"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, Alapin Gambit variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "O-O", "Bg4", "h3", "h5"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, Gligoric variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "O-O", "f6"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, Bronstein variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "O-O", "Qd6"],
+        "side": "White"
+        },
+        {
+        "name": "4.Ba4 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4"],
+        "side": "White"
+        },
+        {
+        "name": "Fianchetto Defense Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "g6"],
+        "side": "White"
+        },
+        {
+        "name": "Cozio Defense Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nge7"],
+        "side": "White"
+        },
+        {
+        "name": "Bird's Defense Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nd4"],
+        "side": "White"
+        },
+        {
+        "name": "Alapin's Defense Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Bb4"],
+        "side": "White"
+        },
+        {
+        "name": "Classical Defense Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Bc5"],
+        "side": "White"
+        },
+        {
+        "name": "Caro variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "b5"],
+        "side": "White"
+        },
+        {
+        "name": "Graz variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "b5", "Bb3", "Bc5"],
+        "side": "White"
+        },
+        {
+        "name": "Taimanov variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "b5", "Bb3", "Na5"],
+        "side": "White"
+        },
+        {
+        "name": "Schliemann Defense Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "f5"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Duras (Keres) variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c4"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, 5.O-O variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "O-O"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Richter variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "Bxc6+", "bxc6", "d4"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Alapin variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "Bxc6+", "bxc6", "d4", "f6"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, 5. c3 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Siesta variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3", "f5"],
+        "side": "White"
+        },
+        {
+        "name": "Siesta, Kopayev variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3", "f5", "exf5", "Bxf5", "O-O"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, 5... Bd7 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3", "Bd7"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Fianchetto (Bronstein) variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3", "Bd7", "d4", "g6"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, Alekhine variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "d4", "exd4", "Qxd4", "Qxd4", "Nxd4", "Bd7"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, Keres variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "Nc3"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, Romanovsky variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "Nc3", "f6", "d3"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, 5.O-O variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "O-O"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, Alapin Gambit variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "O-O", "Bg4", "h3", "h5"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, Gligoric variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "O-O", "f6"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange, Bronstein variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "O-O", "Qd6"],
+        "side": "White"
+        },
+        {
+        "name": "4.Ba4 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4"],
+        "side": "White"
+        },
+        {
+        "name": "Fianchetto Defense Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "g6"],
+        "side": "White"
+        },
+        {
+        "name": "Cozio Defense Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nge7"],
+        "side": "White"
+        },
+        {
+        "name": "Bird's Defense Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nd4"],
+        "side": "White"
+        },
+        {
+        "name": "Alapin's Defense Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Bb4"],
+        "side": "White"
+        },
+        {
+        "name": "Classical Defense Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Bc5"],
+        "side": "White"
+        },
+        {
+        "name": "Caro variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "b5"],
+        "side": "White"
+        },
+        {
+        "name": "Graz variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "b5", "Bb3", "Bc5"],
+        "side": "White"
+        },
+        {
+        "name": "Taimanov variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "b5", "Bb3", "Na5"],
+        "side": "White"
+        },
+        {
+        "name": "Schliemann Defense Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "f5"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6"],
+        "side": "White"
+        },
+        {
+        "name": "Noah's Ark Trap variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "d4", "b5", "Bb3", "Nxd4", "Nxd4", "exd4", "Qxd4", "c5"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Duras (Keres) variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c4"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, 5.O-O variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "O-O"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Richter variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "Bxc6+", "bxc6", "d4"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Alapin variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "Bxc6+", "bxc6", "d4", "f6"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, 5. c3 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Siesta variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3", "f5"],
+        "side": "White"
+        },
+        {
+        "name": "Siesta, Kopayev variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3", "f5", "exf5", "Bxf5", "O-O"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, 5... Bd7 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3", "Bd7"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Fianchetto (Bronstein) variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3", "Bd7", "d4", "g6"],
+        "side": "White"
+        },
+        {
+        "name": "Four Knights (Tarrasch) variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "Nc3"],
+        "side": "White"
+        },
+        {
+        "name": "Treybal (Bayreuth, Exchange Deferred) variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "Bxc6+"],
+        "side": "White"
+        },
+        {
+        "name": "Wormald (Alapin) Attack variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "Qe2"],
+        "side": "White"
+        },
+        {
+        "name": "Wormald Attack, Gruenfeld variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "Qe2", "b5", "Bb3", "Be7", "d4", "d6", "c3", "Bg4"],
+        "side": "White"
+        },
+        {
+        "name": "Anderssen variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "d3"],
+        "side": "White"
+        },
+        {
+        "name": "Morphy Defense, Duras variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "d3", "d6", "c4"],
+        "side": "White"
+        },
+        {
+        "name": "5.O-O variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O"],
+        "side": "White"
+        },
+        {
+        "name": "Wing Attack variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "b5", "Bb3", "Be7", "a4"],
+        "side": "White"
+        },
+        {
+        "name": "6... d6 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "b5", "Bb3", "d6"],
+        "side": "White"
+        },
+        {
+        "name": "Rabinovich variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "b5", "Bb3", "d6", "Ng5", "d5", "exd5", "Nd4"],
+        "side": "White"
+        },
+        {
+        "name": "Archangelsk (Counterthrust) variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "b5", "Bb3", "Bb7"],
+        "side": "White"
+        },
+        {
+        "name": "Moeller Defense variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Bc5"],
+        "side": "White"
+        },
+        {
+        "name": "Steinitz Defense Deferred (Russian Defense) variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "d6"],
+        "side": "White"
+        },
+        {
+        "name": "Steinitz Defense Deferred, Lipnitsky variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "d6", "Bxc6+", "bxc6", "d4", "Bg4"],
+        "side": "White"
+        },
+        {
+        "name": "Steinitz Defense Deferred, Rubinstein variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "d6", "Bxc6+", "bxc6", "d4", "Nxe4"],
+        "side": "White"
+        },
+        {
+        "name": "Steinitz Defense Deferred, Boleslavsky variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "d6", "Bxc6+", "bxc6", "d4", "Nxe4", "Re1", "f5", "dxe5", "d5", "Nc3"],
+        "side": "White"
+        },
+        {
+        "name": "Open (Tarrasch) Defense variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Tartakower variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "Qe2"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Knorre variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "Nc3"],
+        "side": "White"
+        },
+        {
+        "name": "Open, 6.d4 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Riga variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "exd4"],
+        "side": "White"
+        },
+        {
+        "name": "Open, 6... b5 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Friess Attack variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Nxe5"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Richter variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "d5"],
+        "side": "White"
+        },
+        {
+        "name": "Open, 7.Bb3 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Schlechter Defense variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "a4", "Nxd4"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Berger variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "a4", "Nxd4", "Nxd4", "exd4", "Nc3"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Harksen Gambit variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "c4"],
+        "side": "White"
+        },
+        {
+        "name": "Open, 8.dxe5 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Zukertort variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Ne7"],
+        "side": "White"
+        },
+        {
+        "name": "Open, 8...Be6 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Bernstein variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "Nbd2"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Bernstein, Karpov Gambit variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "Nbd2", "Nc5", "c3", "d4", "Ng5"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Howell Attack variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "Qe2"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Howell Attack, Ekstroem variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "Qe2", "Be7", "Rd1", "O-O", "c4", "bxc4", "Bxc4", "Qd7"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Howell Attack, Adam variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "Qe2", "Be7", "c4"],
+        "side": "White"
+        },
+        {
+        "name": "Open, 9.c3 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "c3"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Berlin variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "c3", "Nc5"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Italian variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "c3", "Bc5"],
+        "side": "White"
+        },
+        {
+        "name": "Open, St. Petersburg variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "c3", "Bc5", "Nbd2"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Dilworth variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "c3", "Bc5", "Nbd2", "O-O", "Bc2", "Nxf2"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Motzko Attack variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "c3", "Bc5", "Qd3"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Motzko Attack, Nenarokov variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "c3", "Bc5", "Qd3", "Ne7"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Classical Defense variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "c3", "Be7"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Malkin variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "c3", "Be7", "Nbd2", "O-O", "Qe2"],
+        "side": "White"
+        },
+        {
+        "name": "Open, 10.Re1 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "c3", "Be7", "Re1"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Tarrasch Trap variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "c3", "Be7", "Re1", "O-O", "Nd4", "Qd7", "Nxe6", "fxe6", "Rxe4"],
+        "side": "White"
+        },
+        {
+        "name": "Open, Breslau variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "d4", "b5", "Bb3", "d5", "dxe5", "Be6", "c3", "Be7", "Re1", "O-O", "Nd4", "Nxe5"],
+        "side": "White"
+        },
+        {
+        "name": "Closed, Center Attack variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "d4"],
+        "side": "White"
+        },
+        {
+        "name": "Closed, Basque Gambit (North Spanish) variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "d4", "exd4", "e5", "Ne4", "c3"],
+        "side": "White"
+        },
+        {
+        "name": "Exchange Doubly Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Bxc6"],
+        "side": "White"
+        },
+        {
+        "name": "Worrall Attack variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Qe2"],
+        "side": "White"
+        },
+        {
+        "name": "Worrall Attack, Sharp Line variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Qe2", "b5", "Bb3", "O-O"],
+        "side": "White"
+        },
+        {
+        "name": "Worrall Attack, Solid Line variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Qe2", "b5", "Bb3", "d6"],
+        "side": "White"
+        },
+        {
+        "name": "Closed, Averbach variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "d6"],
+        "side": "White"
+        },
+        {
+        "name": "Closed, 7.Bb3 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3"],
+        "side": "White"
+        },
+        {
+        "name": "Closed, Leonhardt variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "d6", "c3", "Na5", "Bc2", "c5", "d4", "Qc7", "h3", "Nc6", "d5", "Nb8", "Nd2", "g5"],
+        "side": "White"
+        },
+        {
+        "name": "Closed, Balla variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "d6", "c3", "Na5", "Bc2", "c5", "d4", "Qc7", "a4"],
+        "side": "White"
+        },
+        {
+        "name": "Closed, 8.d4 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "d6", "d4"],
+        "side": "White"
+        },
+        {
+        "name": "Trajkovic Counter-Attack variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "Bb7"],
+        "side": "White"
+        },
+        {
+        "name": "Closed, 7...O-O variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O"],
+        "side": "White"
+        },
+        {
+        "name": "Closed, Anti-Marshall 8.a4 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "a4"],
+        "side": "White"
+        },
+        {
+        "name": "Closed, 8.c3 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall Counter-Attack",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall Counter-Attack, 11...c6 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "c6"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, Kevitz variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "Bd6", "Re1", "Qh4"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, Spassky variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "Bd6", "Re1", "Qh4", "g3", "Qh3"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, Main Line variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "c6", "d4"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, 12.d4 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "c6", "d4", "Bd6", "Re1", "Qh4", "g3"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, 12.d4 exd4 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "c6", "d4", "exd4"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, 13...Be6 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "c6", "d4", "Be6"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, 12...Re8 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "Re8"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, 13...Qh4 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "Re8", "d4", "Qh4"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, Main Line, 15.g3 Qh3 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "Re8", "d4", "Qh4", "g3", "Qh3"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, Main Line, 16...Be6 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "Re8", "d4", "Qh4", "g3", "Qh3", "Re1", "Be6"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, Main Line, 18.Re4 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "Re8", "d4", "Qh4", "g3", "Qh3", "Re1", "Be6", "Re4"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, 11...Nf6 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "Nf6"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, 12.d4 Nf6 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "Nf6", "d4"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, 12.c3 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "Re8", "d4", "Bd6"],
+        "side": "White"
+        },
+        {
+        "name": "Marshall, Re3 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5", "exd5", "Nxd5", "Nxe5", "Nxe5", "Rxe5", "c6", "d4", "Re3"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, 5.c3 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Siesta variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3", "f5"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, 6.d4 variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "d4"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Fianchetto variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "c3", "g6"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Nimzowitsch Attack variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "O-O", "Bg4"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Bronstein variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "O-O", "Bd7"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Boleslavsky variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "O-O", "f5"],
+        "side": "White"
+        },
+        {
+        "name": "Modern Steinitz Defense, Deferred variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "d6", "O-O", "Be7"],
+        "side": "White"
+        },
+        {
+        "name": "Steinitz Defense, Old Steinitz variation",
+        "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "d6"],
+        "side": "White"
         }
     ],
+    
+      
+
     "italiangame": [
         {
             "name": "Giuoco Piano",
@@ -75,6 +1035,7 @@
             "side": "White"
         }
     ],
+    
     "sicilian": [
         {
             "name": "Najdorf Variation",
@@ -251,18 +1212,71 @@
             "side": "Black"
         }
     ],
+
     "modern": [
         {
-            "name": "Averbakh System",
-            "moves": ["e4", "g6", "d4", "Bg7", "c4", "d6", "Nc3", "e5"],
-            "side": "Black"
+        "name": "Averbakh System",
+        "moves": ["e4", "g6", "d4", "Bg7", "c4", "d6", "Nc3", "e5"],
+        "side": "Black"
         },
         {
-            "name": "Pirc Transposition",
-            "moves": ["e4", "g6", "d4", "Bg7", "Nc3", "d6", "Nf3", "Nf6"],
-            "side": "Black"
+        "name": "Pirc Transposition",
+        "moves": ["e4", "g6", "d4", "Bg7", "Nc3", "d6", "Nf3", "Nf6"],
+        "side": "Black"
+        },
+        {
+        "name": "Pseudo-Dragon",
+        "moves": ["e4", "g6", "d4", "Bg7", "Nc3", "d6", "Be3", "a6", "Qd2", "Nd7", "f3", "b5", "a4", "b4", "Nd1", "c5"],
+        "side": "Black"
+        },
+        {
+        "name": "Austrian Attack",
+        "moves": ["e4", "g6", "d4", "Bg7", "f4", "d6", "Nf3", "Nf6", "e5", "Nd7", "Bd3", "Bb7", "Qe2", "e6"],
+        "side": "Black"
+        },
+        {
+        "name": "Classical Modern",
+        "moves": ["e4", "g6", "d4", "Bg7", "Nc3", "d6", "Nf3", "Nf6", "Be2", "O-O", "O-O", "Nc6"],
+        "side": "Black"
+        },
+        {
+        "name": "Fianchetto Modern",
+        "moves": ["e4", "g6", "d4", "Bg7", "g3", "d6", "Bg2", "Nf6", "Ne2", "O-O"],
+        "side": "Black"
+        },
+        {
+        "name": "Cro-Magnon Line",
+        "moves": ["e4", "g6", "d4", "Bg7", "Bc4", "d6", "Nc3", "Nf6", "Qe2", "O-O", "O-O", "Nc6"],
+        "side": "Black"
+        },
+        {
+        "name": "Anti-Austrian Attack",
+        "moves": ["e4", "g6", "d4", "Bg7", "f4", "d5"],
+        "side": "Black"
+        },
+        {
+        "name": "Maybe Benoni",
+        "moves": ["e4", "g6", "d4", "Bg7", "c4", "c5"],
+        "side": "Black"
+        },
+        {
+        "name": "Hippopotamus Formation",
+        "moves": ["e4", "g6", "d4", "d6", "Nc3", "a6", "g3", "b6", "Bg2", "Bb7", "Nge2", "Nd7"],
+        "side": "Black"
+        },
+        {
+        "name": "To Nowhere: 4. Bg5",
+        "moves": ["e4", "g6", "d4", "Bg7", "Bg5"],
+        "side": "Black"
+        },
+        {
+        "name": "Anti-Queen’s Pawn Lines",
+        "moves": ["e4", "g6", "d4", "Bg7", "Nf3", "d6", "Nc3", "Nf6"],
+        "side": "Black"
         }
     ],
+      
+
     "philidor": [
         {
             "name": "Antoshin Variation",
