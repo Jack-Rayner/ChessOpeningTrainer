@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('gameContainer');
     const sidebarToggle = document.getElementById('sidebarToggle');
 
-    // Dark Mode Logic - Consolidated for Sun/Moon Toggle
+    // Dark Mode Logic w/ sun and moon
     function initializeDarkMode() {
         const savedDarkMode = localStorage.getItem('darkMode');
         const isDarkModeEnabled = savedDarkMode === 'enabled';
@@ -65,10 +65,27 @@ document.addEventListener('DOMContentLoaded', () => {
         statusElement.textContent = "Try to complete the opening again!";
         practiceAgainButton.style.display = 'none';
         newOpeningButton.style.display = 'none';
+    
+        // Re-enable dragging
+        board = Chessboard('board', {
+            draggable: true,  // Re-enable dragging for the new or restarted opening
+            position: game.fen(),
+            onDrop: handleMove,
+            onSnapEnd: () => board.position(game.fen()),
+    
+            onDragStart: (source, piece, position, orientation) => {
+                const isWhiteToMove = game.turn() === 'w';
+                if ((isWhiteToMove && piece.search(/^b/) !== -1) || (!isWhiteToMove && piece.search(/^w/) !== -1)) {
+                    return false;  // Prevent dragging opponent's pieces
+                }
+            }
+        });
+    
         board.orientation(currentOpening.side === "Black" ? 'black' : 'white');
         board.position(game.fen());
+    
         if (currentOpening.side === "Black") {
-            setTimeout(playNextMove, moveDelay);
+            setTimeout(playNextMove, 100);
         }
     }
 
@@ -86,6 +103,21 @@ document.addEventListener('DOMContentLoaded', () => {
     
             openingNameElement.textContent = `Opening: ${openingFamily} - ${randomVariation.name}`;
             statusElement.textContent = "Make your move";
+    
+            // Re-enable dragging for new opening
+            board = Chessboard('board', {
+                draggable: true,
+                position: game.fen(),
+                onDrop: handleMove,
+                onSnapEnd: () => board.position(game.fen()),
+    
+                onDragStart: (source, piece, position, orientation) => {
+                    const isWhiteToMove = game.turn() === 'w';
+                    if ((isWhiteToMove && piece.search(/^b/) !== -1) || (!isWhiteToMove && piece.search(/^w/) !== -1)) {
+                        return false;  // Prevent dragging opponent's pieces
+                    }
+                }
+            });
     
             board.orientation(randomVariation.side === "Black" ? 'black' : 'white');
             board.position(game.fen());
@@ -148,6 +180,16 @@ document.addEventListener('DOMContentLoaded', () => {
             statusElement.textContent = `Opening sequence completed: ${currentOpening.name}`;
             practiceAgainButton.style.display = 'inline-block';
             newOpeningButton.style.display = 'inline-block';
+    
+            // Get the current orientation (white or black)
+            const currentOrientation = board.orientation();
+    
+            // Disable dragging of pieces after the opening is completed while keeping the current orientation
+            board = Chessboard('board', {
+                draggable: false, 
+                position: game.fen(),  // keep current board position
+                orientation: currentOrientation  // maintain current orientation
+            });
         } else {
             statusElement.textContent = "Correct! Next move.";
         }
@@ -163,10 +205,54 @@ document.addEventListener('DOMContentLoaded', () => {
         board = Chessboard('board', {
             draggable: true,
             position: 'start',
-            onDrop: handleMove,
+            onDrop: (source, target) => {
+                let move = game.move({ from: source, to: target, promotion: 'q' });
+    
+                // Snap back if move is invalid or doesn't match the opening sequence
+                if (!move || move.san !== currentOpening.moves[currentMoveIndex]) {
+                    game.undo();
+                    statusElement.textContent = `Incorrect move! The correct move was ${currentOpening.moves[currentMoveIndex]}. Try again.`;
+                    return 'snapback';
+                }
+    
+                // Move is valid and part of sequence
+                currentMoveIndex++;
+                updateStatusAfterMove();
+                board.position(game.fen());  // Update the board with the new position
+            },
             onSnapEnd: () => board.position(game.fen()),
+    
+            // Prevent dragging pieces of the opposite color
+            onDragStart: (source, piece, position, orientation) => {
+                // Get the current player's side based on the opening side
+                const isWhiteToMove = game.turn() === 'w';
+    
+                // Block dragging if the piece does not belong to the current player
+                if ((isWhiteToMove && piece.search(/^b/) !== -1) || (!isWhiteToMove && piece.search(/^w/) !== -1)) {
+                    return false; // Prevent dragging
+                }
+            }
         });
-    }
+    
+        // start opening if user hovers over board
+        setTimeout(() => {
+            const boardContainer = document.getElementById('board');
+            if (boardContainer) {
+                boardContainer.addEventListener('mouseenter', () => {
+    
+                    if (!currentOpening.name) {
+                        setTimeout(() => {
+                            const randomFamily = Object.keys(openingsData)[Math.floor(Math.random() * Object.keys(openingsData).length)];
+                            startNewOpening(randomFamily);
+                        }, 100);
+                    }
+                });
+            } else {
+                console.error('Board container not found');
+            }
+        }, 10);
+    }    
+    
 
     initializeBoard();
 
