@@ -134,26 +134,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    let moveValid = false;
+    
     // Handle piece moves
     function handleMove(source, target) {
-        let move = game.move({ from: source, to: target, promotion: 'q' });
+        console.log(`Piece clicked: ${source}`);
+        
+        // Validate and process the move only after the piece is dropped
+        let move = game.move({
+            from: source,
+            to: target
+        });
     
-        if (move === null || move.san !== currentOpening.moves[currentMoveIndex]) {
-            game.undo();
-            statusElement.textContent = `Incorrect move! The correct move was ${currentOpening.moves[currentMoveIndex]}. Try again.`;
-            return 'snapback';
-        } else {
-            currentMoveIndex++;
-            updateStatusAfterMove();
-    
-            setTimeout(() => {
-                board.position(game.fen());
-                if (shouldPlayNextMove()) {
-                    setTimeout(playNextMove, 10);
-                }
-            }, 100);
+        // Log if the move was successful or invalid
+        if (!move) {
+            console.log(`Invalid move: ${source} to ${target}`);
+            game.undo();  // Undo the move if it's invalid
+            board.position(game.fen());  // Reset board to the last valid position
+            statusElement.textContent = `Invalid move! Try again.`;
+            return 'snapback';  // Snap back the piece
         }
+    
+        // Move is valid
+        console.log(`Move completed: ${move.san}`);
+        moveValid = true;
+        currentMoveIndex++;
+        updateStatusAfterMove();
+    
+        // Delay the board update to allow for a smoother visual
+        setTimeout(() => {
+            board.position(game.fen());
+            if (shouldPlayNextMove()) {
+                setTimeout(playNextMove, 10);  // Play the next move after a short delay
+            }
+        }, 100);
     }
+    
+    
 
     // Play next move for the computer
     function playNextMove() {
@@ -206,30 +223,23 @@ document.addEventListener('DOMContentLoaded', () => {
             draggable: true,
             position: 'start',
             onDrop: (source, target) => {
-                let move = game.move({ from: source, to: target, promotion: 'q' });
+                let move = game.move({ from: source, to: target});
     
-                // Snap back if move is invalid or doesn't match the opening sequence
                 if (!move || move.san !== currentOpening.moves[currentMoveIndex]) {
                     game.undo();
                     statusElement.textContent = `Incorrect move! The correct move was ${currentOpening.moves[currentMoveIndex]}. Try again.`;
-                    return 'snapback';
+                    return 'snapback';  // Triggers snapback for invalid move
                 }
     
-                // Move is valid and part of sequence
+                // Valid move
                 currentMoveIndex++;
                 updateStatusAfterMove();
-                board.position(game.fen());  // Update the board with the new position
+                board.position(game.fen());
             },
-            onSnapEnd: () => board.position(game.fen()),
-    
-            // Prevent dragging pieces of the opposite color
-            onDragStart: (source, piece, position, orientation) => {
-                // Get the current player's side based on the opening side
+            onDragStart: (source, piece) => {
                 const isWhiteToMove = game.turn() === 'w';
-    
-                // Block dragging if the piece does not belong to the current player
-                if ((isWhiteToMove && piece.search(/^b/) !== -1) || (!isWhiteToMove && piece.search(/^w/) !== -1)) {
-                    return false; // Prevent dragging
+                if ((isWhiteToMove && piece.startsWith('b')) || (!isWhiteToMove && piece.startsWith('w'))) {
+                    return false;  // Prevent dragging opponent's pieces
                 }
             }
         });
@@ -276,4 +286,28 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('is-sidebar-open');
     });
     document.querySelector('.tdnn').classList.toggle('day', isDarkModeEnabled);
+
+    // postMessage listener for portfolio scroll automation
+    window.addEventListener('message', (event) => {
+      if (event.data.action === 'startOpening') {
+        // Pick a random opening family from available data
+        const families = Object.keys(openingsData);
+        if (families.length > 0) {
+          const randomFamily = families[Math.floor(Math.random() * families.length)];
+          startNewOpening(randomFamily);
+        }
+      }
+      
+      if (event.data.action === 'makeMove') {
+        // Execute the next move in the current opening sequence
+        if (currentMoveIndex < currentOpening.moves.length) {
+          const move = game.move(currentOpening.moves[currentMoveIndex]);
+          if (move) {
+            currentMoveIndex++;
+            board.position(game.fen());
+            updateStatusAfterMove();
+          }
+        }
+      }
+    });
 });

@@ -1584,153 +1584,165 @@
     // Browser Events
     // -------------------------------------------------------------------------
 
-    function stopDefault (evt) {
-      evt.preventDefault()
+    var startSquare = null; // To track the initial square on mouse down
+
+    function stopDefault(evt) {
+      evt.preventDefault();
     }
 
-    function mousedownSquare (evt) {
+    function mousedownSquare(evt) {
       // do nothing if we're not draggable
-      if (!config.draggable) return
+      if (!config.draggable) return;
 
       // do nothing if there is no piece on this square
-      var square = $(this).attr('data-square')
-      if (!validSquare(square)) return
-      if (!currentPosition.hasOwnProperty(square)) return
+      var square = $(this).attr('data-square');
+      if (!validSquare(square)) return;
+      if (!currentPosition.hasOwnProperty(square)) return;
 
-      beginDraggingPiece(square, currentPosition[square], evt.pageX, evt.pageY)
+      // Track the initial square
+      startSquare = square;
+      beginDraggingPiece(square, currentPosition[square], evt.pageX, evt.pageY);
     }
 
-    function touchstartSquare (e) {
+    function touchstartSquare(e) {
       // do nothing if we're not draggable
-      if (!config.draggable) return
+      if (!config.draggable) return;
 
       // do nothing if there is no piece on this square
-      var square = $(this).attr('data-square')
-      if (!validSquare(square)) return
-      if (!currentPosition.hasOwnProperty(square)) return
+      var square = $(this).attr('data-square');
+      if (!validSquare(square)) return;
+      if (!currentPosition.hasOwnProperty(square)) return;
 
-      e = e.originalEvent
-      beginDraggingPiece(
-        square,
-        currentPosition[square],
-        e.changedTouches[0].pageX,
-        e.changedTouches[0].pageY
-      )
+      e = e.originalEvent;
+      // Track the initial square
+      startSquare = square;
+      beginDraggingPiece(square, currentPosition[square], e.changedTouches[0].pageX, e.changedTouches[0].pageY);
     }
 
-    function mousedownSparePiece (evt) {
+    function mousedownSparePiece(evt) {
       // do nothing if sparePieces is not enabled
-      if (!config.sparePieces) return
+      if (!config.sparePieces) return;
 
-      var piece = $(this).attr('data-piece')
-
-      beginDraggingPiece('spare', piece, evt.pageX, evt.pageY)
+      var piece = $(this).attr('data-piece');
+      beginDraggingPiece('spare', piece, evt.pageX, evt.pageY);
     }
 
-    function touchstartSparePiece (e) {
+    function touchstartSparePiece(e) {
       // do nothing if sparePieces is not enabled
-      if (!config.sparePieces) return
+      if (!config.sparePieces) return;
 
-      var piece = $(this).attr('data-piece')
+      var piece = $(this).attr('data-piece');
 
-      e = e.originalEvent
-      beginDraggingPiece(
-        'spare',
-        piece,
-        e.changedTouches[0].pageX,
-        e.changedTouches[0].pageY
-      )
+      e = e.originalEvent;
+      beginDraggingPiece('spare', piece, e.changedTouches[0].pageX, e.changedTouches[0].pageY);
     }
 
-    function mousemoveWindow (evt) {
+    function mousemoveWindow(evt) {
       if (isDragging) {
-        updateDraggedPiece(evt.pageX, evt.pageY)
+        updateDraggedPiece(evt.pageX, evt.pageY);
       }
     }
 
-    var throttledMousemoveWindow = throttle(mousemoveWindow, config.dragThrottleRate)
+    var throttledMousemoveWindow = throttle(mousemoveWindow, config.dragThrottleRate);
 
-    function touchmoveWindow (evt) {
+    function touchmoveWindow(evt) {
       // do nothing if we are not dragging a piece
-      if (!isDragging) return
+      if (!isDragging) return;
 
       // prevent screen from scrolling
-      evt.preventDefault()
+      evt.preventDefault();
 
-      updateDraggedPiece(evt.originalEvent.changedTouches[0].pageX,
-        evt.originalEvent.changedTouches[0].pageY)
+      updateDraggedPiece(evt.originalEvent.changedTouches[0].pageX, evt.originalEvent.changedTouches[0].pageY);
     }
 
-    var throttledTouchmoveWindow = throttle(touchmoveWindow, config.dragThrottleRate)
+    var throttledTouchmoveWindow = throttle(touchmoveWindow, config.dragThrottleRate);
 
-    function mouseupWindow (evt) {
+    function mouseupWindow(evt) {
       // do nothing if we are not dragging a piece
-      if (!isDragging) return
+      if (!isDragging) return;
 
       // get the location
-      var location = isXYOnSquare(evt.pageX, evt.pageY)
+      var endSquare = isXYOnSquare(evt.pageX, evt.pageY);
 
-      stopDraggedPiece(location)
+      // Only move if the square is different
+      if (endSquare !== startSquare) {
+        stopDraggedPiece(endSquare);
+      } else {
+        // Reset the drag without moving the piece if the squares are the same
+        cancelDrag();
+      }
+
+      // Reset startSquare after handling the release
+      startSquare = null;
     }
 
-    function touchendWindow (evt) {
+    function touchendWindow(evt) {
       // do nothing if we are not dragging a piece
-      if (!isDragging) return
+      if (!isDragging) return;
 
       // get the location
-      var location = isXYOnSquare(evt.originalEvent.changedTouches[0].pageX,
-        evt.originalEvent.changedTouches[0].pageY)
+      var endSquare = isXYOnSquare(evt.originalEvent.changedTouches[0].pageX, evt.originalEvent.changedTouches[0].pageY);
 
-      stopDraggedPiece(location)
+      // Only move if the square is different
+      if (endSquare !== startSquare) {
+        stopDraggedPiece(endSquare);
+      } else {
+        // Reset the drag without moving the piece if the squares are the same
+        cancelDrag();
+      }
+
+      // Reset startSquare after handling the release
+      startSquare = null;
     }
 
-    function mouseenterSquare (evt) {
+    function mouseenterSquare(evt) {
       // do not fire this event if we are dragging a piece
       // NOTE: this should never happen, but it's a safeguard
-      if (isDragging) return
+      if (isDragging) return;
 
-      // exit if they did not provide a onMouseoverSquare function
-      if (!isFunction(config.onMouseoverSquare)) return
+      // exit if they did not provide an onMouseoverSquare function
+      if (!isFunction(config.onMouseoverSquare)) return;
 
       // get the square
-      var square = $(evt.currentTarget).attr('data-square')
+      var square = $(evt.currentTarget).attr('data-square');
 
       // NOTE: this should never happen; defensive
-      if (!validSquare(square)) return
+      if (!validSquare(square)) return;
 
       // get the piece on this square
-      var piece = false
+      var piece = false;
       if (currentPosition.hasOwnProperty(square)) {
-        piece = currentPosition[square]
+        piece = currentPosition[square];
       }
 
       // execute their function
-      config.onMouseoverSquare(square, piece, deepCopy(currentPosition), currentOrientation)
+      config.onMouseoverSquare(square, piece, deepCopy(currentPosition), currentOrientation);
     }
 
-    function mouseleaveSquare (evt) {
+    function mouseleaveSquare(evt) {
       // do not fire this event if we are dragging a piece
       // NOTE: this should never happen, but it's a safeguard
-      if (isDragging) return
+      if (isDragging) return;
 
       // exit if they did not provide an onMouseoutSquare function
-      if (!isFunction(config.onMouseoutSquare)) return
+      if (!isFunction(config.onMouseoutSquare)) return;
 
       // get the square
-      var square = $(evt.currentTarget).attr('data-square')
+      var square = $(evt.currentTarget).attr('data-square');
 
       // NOTE: this should never happen; defensive
-      if (!validSquare(square)) return
+      if (!validSquare(square)) return;
 
       // get the piece on this square
-      var piece = false
+      var piece = false;
       if (currentPosition.hasOwnProperty(square)) {
-        piece = currentPosition[square]
+        piece = currentPosition[square];
       }
 
       // execute their function
-      config.onMouseoutSquare(square, piece, deepCopy(currentPosition), currentOrientation)
+      config.onMouseoutSquare(square, piece, deepCopy(currentPosition), currentOrientation);
     }
+
 
     // -------------------------------------------------------------------------
     // Initialization
