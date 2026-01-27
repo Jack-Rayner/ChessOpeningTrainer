@@ -285,20 +285,29 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebar.classList.remove('is-open');
         document.body.classList.remove('is-sidebar-open');
     });
-    document.querySelector('.tdnn').classList.toggle('day', isDarkModeEnabled);
 
     // postMessage listener for portfolio scroll automation
     window.addEventListener('message', (event) => {
+      console.log('Chess trainer received message:', event.data);
+      console.log('Origin:', event.origin);
+      console.log('openingsData keys:', Object.keys(openingsData));
+      
       if (event.data.action === 'startOpening') {
+        console.log('Action is startOpening');
         // Pick a random opening family from available data
         const families = Object.keys(openingsData);
+        console.log('Available families:', families);
         if (families.length > 0) {
           const randomFamily = families[Math.floor(Math.random() * families.length)];
+          console.log('Starting opening:', randomFamily);
           startNewOpening(randomFamily);
+        } else {
+          console.log('No families available - openingsData might not be loaded yet');
         }
       }
       
       if (event.data.action === 'makeMove') {
+        console.log('Action is makeMove');
         // Execute the next move in the current opening sequence
         if (currentMoveIndex < currentOpening.moves.length) {
           const move = game.move(currentOpening.moves[currentMoveIndex]);
