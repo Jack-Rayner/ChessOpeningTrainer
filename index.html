@@ -77,6 +77,7 @@
                 </p>
                 <p class="alt" id="altLine" hidden></p>
                 <p class="reply" id="replyLine" hidden></p>
+                <p class="note" id="noteLine" hidden></p>
 
                 <div class="turn" id="turn" hidden>
                     <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
@@ -96,6 +97,22 @@
                 </div>
             </section>
 
+            <section class="card map-card" id="mapCard" hidden>
+                <div class="card-head">
+                    <h2 id="mapHeading">Family map</h2>
+                    <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
+                </div>
+                <p class="map-summary" id="mapSummary"></p>
+                <div class="map-legend" aria-hidden="true">
+                    <span><i class="dot is-learned"></i>Known</span>
+                    <span><i class="dot is-learning"></i>Learning</span>
+                    <span><i class="dot is-new"></i>New</span>
+                    <span><i class="dot is-locked"></i>Locked</span>
+                </div>
+                <p class="map-hint">Tap a line to study just that line.</p>
+                <div class="map-lines" id="mapLines"></div>
+            </section>
+
             <section class="card">
                 <div class="card-head">
                     <h2>Moves</h2>
@@ -109,6 +126,13 @@
                     <h2>New drill</h2>
                     <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
                 </div>
+                <div class="seg" role="group" aria-label="Mode">
+                    <button type="button" data-mode="drill" aria-pressed="true">Drill</button>
+                    <button type="button" data-mode="learn" aria-pressed="false">Learn</button>
+                </div>
+                <p class="mode-hint" id="modeHint">Book replies at random; the line stays hidden until the end.</p>
+
+                <span class="field-label">Play as</span>
                 <div class="seg" role="group" aria-label="Play as">
                     <button type="button" data-side="White" aria-pressed="true">White</button>
                     <button type="button" data-side="Black" aria-pressed="false">Black</button>

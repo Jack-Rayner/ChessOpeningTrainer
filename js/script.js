@@ -39,13 +39,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---------- Opening data ----------
 
     let openingsData = {};
+    let notesData = {};
+    // Notes are optional: Learn mode works without them.
+    const notesReady = fetch('./data/notes.json')
+        .then(response => (response.ok ? response.json() : {}))
+        .catch(() => ({}))
+        .then(data => { notesData = data; });
     const dataReady = fetch('./data/openings.json')
         .then(response => {
             if (!response.ok) throw new Error('Failed to load openings');
             return response.json();
         })
-        .then(data => {
+        .then(async data => {
             openingsData = data;
+            await notesReady;
             renderPicker();
         })
         .catch(error => {
@@ -98,6 +105,143 @@ document.addEventListener('DOMContentLoaded', () => {
         return book;
     }
 
+    // ---------- Learn mode: the family as a tree of positions ----------
+    // node = { ply, moves: Map(san -> { child, from, to, count }), lines: Set(lineIndex) }
+
+    const START_KEY = positionKey(new Chess().fen());
+    const treeCache = new Map();
+
+    function getTree(family) {
+        if (treeCache.has(family)) return treeCache.get(family);
+        const tree = new Map();
+        const node = (key, ply) => {
+            if (!tree.has(key)) tree.set(key, { ply, moves: new Map(), lines: new Set() });
+            const n = tree.get(key);
+            n.ply = Math.min(n.ply, ply);
+            return n;
+        };
+        (openingsData[family] || []).forEach((line, index) => {
+            const replay = new Chess();
+            for (let i = 0; i < line.moves.length; i++) {
+                const from = node(positionKey(replay.fen()), i);
+                from.lines.add(index);
+                let move = null;
+                try { move = replay.move(line.moves[i]); } catch (e) { /* bad data */ }
+                if (!move) return;
+                const edge = from.moves.get(move.san) || { child: positionKey(replay.fen()), from: move.from, to: move.to, count: 0 };
+                edge.count++;
+                from.moves.set(move.san, edge);
+            }
+            node(positionKey(replay.fen()), line.moves.length).lines.add(index);
+        });
+        treeCache.set(family, tree);
+        return tree;
+    }
+
+    // Notes are keyed by the moves that reach a position; they show once you arrive there,
+    // by whichever move order.
+    const noteCache = new Map();
+    function getNotes(family) {
+        if (noteCache.has(family)) return noteCache.get(family);
+        const notes = new Map();
+        for (const [moves, text] of Object.entries(notesData[family] || {})) {
+            const replay = new Chess();
+            try {
+                moves.split(' ').forEach(san => replay.move(san));
+                notes.set(positionKey(replay.fen()), text);
+            } catch (e) { console.warn(`Skipping note with illegal moves: ${family} / ${moves}`); }
+        }
+        noteCache.set(family, notes);
+        return notes;
+    }
+
+    // ---------- Learn mode: memory (spaced repetition per position) ----------
+    // box 0 = new (shown with an arrow), 1 = seen (piece hinted), 2+ = from memory.
+    // A correct answer moves a position up a box and pushes its next review out;
+    // a miss drops it back to box 1 and makes it due straight away.
+
+    const MEMORY_KEY = 'learn-v1';
+    const MIN = 60e3, DAY = 864e5;
+    const INTERVALS = [0, 10 * MIN, DAY, 3 * DAY, 7 * DAY, 21 * DAY];
+    const START_DEPTH = 6;     // plies unlocked to begin with
+    const DEPTH_STEP = 4;      // plies added each time the unlocked part is mostly known
+    const UNLOCK_SHARE = 0.8;  // share of unlocked positions that must be box 2+
+
+    let memory = { cards: {}, depth: {} };
+    try {
+        const saved = JSON.parse(localStorage.getItem(MEMORY_KEY));
+        if (saved && saved.cards) memory = { cards: saved.cards, depth: saved.depth || {} };
+    } catch (e) { /* storage unavailable: progress lasts this visit only */ }
+    const saveMemory = () => {
+        try { localStorage.setItem(MEMORY_KEY, JSON.stringify(memory)); } catch (e) { /* ignore */ }
+    };
+
+    const studyKey = (family, color) => `${family}|${color}`;
+    const cardKey = (family, color, key) => `${family}|${color}|${key}`;
+    const cardFor = (family, color, key) => memory.cards[cardKey(family, color, key)];
+    const boxOf = card => (card ? card.box : 0);
+    const isDue = card => !card || card.due <= Date.now();
+    const statusOf = card => (!card || card.box === 0 ? 'new' : card.box >= 3 ? 'learned' : 'learning');
+    const depthFor = (family, color) => memory.depth[studyKey(family, color)] || START_DEPTH;
+    const isTraineeNode = (n, color) => n && n.moves.size > 0 && (n.ply % 2 === 0) === (color === 'w');
+
+    function grade(family, color, key, correct) {
+        const ck = cardKey(family, color, key);
+        const card = memory.cards[ck];
+        if (correct) {
+            const box = Math.min(boxOf(card) + 1, INTERVALS.length - 1);
+            memory.cards[ck] = { box, due: Date.now() + INTERVALS[box] };
+        } else {
+            memory.cards[ck] = { box: 1, due: Date.now() };
+        }
+        saveMemory();
+    }
+
+    // Every position where it's the trainee's move, reachable within `depth` plies.
+    function traineeKeys(tree, color, depth = Infinity) {
+        const keys = new Set(), seen = new Set();
+        const walk = key => {
+            if (seen.has(key)) return;
+            seen.add(key);
+            const n = tree.get(key);
+            if (!n || n.ply >= depth) return;
+            if (isTraineeNode(n, color)) keys.add(key);
+            n.moves.forEach(edge => walk(edge.child));
+        };
+        walk(START_KEY);
+        return keys;
+    }
+
+    // How much practice waits down this branch (within the unlocked depth): new or due
+    // positions count most, positions you've only just seen count a little.
+    function branchNeed(tree, family, color, depth, key, seen = new Set()) {
+        if (seen.has(key)) return 0;
+        seen.add(key);
+        const n = tree.get(key);
+        if (!n || n.ply >= depth) return 0;
+        let need = 0;
+        if (isTraineeNode(n, color)) {
+            const card = cardFor(family, color, key);
+            need = isDue(card) ? 3 : card.box < 2 ? 1 : 0;
+        }
+        n.moves.forEach(edge => { need += branchNeed(tree, family, color, depth, edge.child, seen); });
+        return need;
+    }
+
+    // Opens the next few moves once most of what's unlocked is known. Returns true if it did.
+    function maybeUnlock(family, color) {
+        const tree = getTree(family);
+        const depth = depthFor(family, color);
+        const keys = [...traineeKeys(tree, color, depth)];
+        const deepest = Math.max(...[...tree.values()].map(n => n.ply));
+        if (!keys.length || depth > deepest) return false;
+        const known = keys.filter(k => boxOf(cardFor(family, color, k)) >= 2).length;
+        if (known / keys.length < UNLOCK_SHARE) return false;
+        memory.depth[studyKey(family, color)] = depth + DEPTH_STEP;
+        saveMemory();
+        return true;
+    }
+
     // ---------- "Now playing" card ----------
 
     function setWho(text) { $('openingName').textContent = text; }
@@ -132,6 +276,24 @@ document.addEventListener('DOMContentLoaded', () => {
         el.textContent = text || '';
     }
 
+    // Idea notes: your move's note, then your opponent's reply's, each with the move in bold.
+    function setNote(san, text) {
+        const el = $('noteLine');
+        el.textContent = '';
+        el.hidden = true;
+        if (text) addNote(san, text);
+    }
+    function addNote(san, text) {
+        const el = $('noteLine');
+        const row = document.createElement('span');
+        row.className = 'note-row';
+        const b = document.createElement('b');
+        b.textContent = san;
+        row.append(b, ` ${text}`);
+        el.append(row);
+        el.hidden = false;
+    }
+
     function updateTurn() {
         const active = drill && !drill.finished;
         $('turn').hidden = !active;
@@ -140,12 +302,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const white = game.turn() === 'w';
         $('turnPiece').src = `img/chesspieces/nouveau/${white ? 'w' : 'b'}P.svg`;
         $('turnText').textContent = `${white ? 'White' : 'Black'} to move`;
-        $('turnNote').textContent = game.turn() === drill.userColor ? 'Your move' : 'Your opponent is thinking…';
+        let note = 'Your opponent is thinking…';
+        if (game.turn() === drill.userColor) {
+            note = 'Your move';
+            if (drill.mode === 'learn') {
+                note = drill.hint === 'arrow' ? 'New position: play the arrowed move'
+                    : drill.hint === 'piece' ? 'You have seen this one: the piece to move is marked'
+                    : 'From memory';
+            }
+        }
+        $('turnNote').textContent = note;
     }
 
     function showActions(which) {
         $('drillActions').hidden = which !== 'drill';
         $('endActions').hidden = which !== 'end';
+        $('bookButton').textContent = drill && drill.mode === 'learn' ? 'Show me' : 'Show book moves';
+        $('practiceAgain').textContent = drill && drill.mode === 'learn' ? 'Same branch again' : 'Retry this line';
+        $('newOpening').textContent = drill && drill.mode === 'learn' ? 'Next run' : 'New drill';
     }
 
     function renderMoves() {
@@ -209,6 +383,56 @@ document.addEventListener('DOMContentLoaded', () => {
         [last.from, last.to].forEach(sq => squareEl(sq)?.classList.add('last-move'));
     }
 
+    // ---------- Learn hints: arrows and marked pieces ----------
+
+    let arrows = [];
+    function drawArrows(list) {
+        arrows = list;
+        $('boardArrows')?.remove();
+        if (!list.length) return;
+        const host = $('board');
+        const origin = host.getBoundingClientRect();
+        const centre = sq => {
+            const r = squareEl(sq)?.getBoundingClientRect();
+            return r && { x: r.left - origin.left + r.width / 2, y: r.top - origin.top + r.height / 2, size: r.width };
+        };
+        const ns = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(ns, 'svg');
+        svg.id = 'boardArrows';
+        svg.classList.add('board-arrows');
+        svg.setAttribute('aria-hidden', 'true');
+        for (const { from, to } of list) {
+            const a = centre(from), b = centre(to);
+            if (!a || !b) continue;
+            const w = a.size * 0.16;
+            const len = Math.hypot(b.x - a.x, b.y - a.y);
+            if (!len || !a.size) continue;   // board not laid out yet
+            const ux = (b.x - a.x) / len, uy = (b.y - a.y) / len;
+            const head = w * 2.2;
+            const tipX = b.x - ux * a.size * 0.12, tipY = b.y - uy * a.size * 0.12;
+            const baseX = tipX - ux * head, baseY = tipY - uy * head;
+            const line = document.createElementNS(ns, 'line');
+            line.setAttribute('x1', a.x); line.setAttribute('y1', a.y);
+            line.setAttribute('x2', baseX); line.setAttribute('y2', baseY);
+            line.setAttribute('stroke-width', w);
+            const tri = document.createElementNS(ns, 'polygon');
+            const px = -uy * head * 0.75, py = ux * head * 0.75;
+            tri.setAttribute('points', `${tipX},${tipY} ${baseX + px},${baseY + py} ${baseX - px},${baseY - py}`);
+            svg.append(line, tri);
+        }
+        host.append(svg);
+    }
+
+    function markPieces(squares) {
+        document.querySelectorAll('#board .hint-from').forEach(el => el.classList.remove('hint-from'));
+        squares.forEach(sq => squareEl(sq)?.classList.add('hint-from'));
+    }
+
+    function clearHints() {
+        drawArrows([]);
+        markPieces([]);
+    }
+
     function clearSelection() {
         selected = null;
         document.querySelectorAll('#board .is-selected, #board .is-target').forEach(el =>
@@ -246,29 +470,52 @@ document.addEventListener('DOMContentLoaded', () => {
         board.resize();
         clearSelection();
         highlightLastMove();
+        drawArrows(arrows);
+        if (drill && drill.hint === 'piece') showHint();
     });
 
-    // ---------- Drill ----------
+    // ---------- Drill and Learn ----------
+    // Drill: book replies at random, the line stays hidden, any book move is accepted.
+    // Learn: one family, taught position by position. New positions are shown with an
+    // arrow, then the piece is marked, then you play from memory; the opponent steers
+    // towards the branches you're weakest on, and deeper moves unlock as you learn.
 
     const bookNode = () => book.get(positionKey(game.fen()));
+    const treeNode = () => drill.tree.get(positionKey(game.fen()));
+    const focusLine = () => (drill.focus === null ? null : openingsData[drill.family][drill.focus]);
 
-    function startDrill({ side, family = null, replay = [] }) {
+    // True while the game so far follows the focused line exactly.
+    function onFocusLine() {
+        const line = focusLine();
+        if (!line) return false;
+        const history = game.history();
+        return history.length <= line.moves.length && history.every((san, i) => san === line.moves[i]);
+    }
+
+    function startDrill({ mode = 'drill', side, family = null, replay = [], focus = null }) {
+        if (mode === 'learn' && !family) family = familiesFor(side)[0];
         book = getBook(family);
         if (!book.size) {
             setWho('No lines found for that choice.');
             return;
         }
+        selectMode(mode);
         selectSide(side);
         chooseOpening(family || '');
 
         game.reset();
         clearSelection();
+        clearHints();
         drill = {
-            side, family, replay,
+            mode, side, family, replay, focus,
+            tree: mode === 'learn' ? getTree(family) : null,
             userColor: side === 'White' ? 'w' : 'b',
             opponentChoices: [],
             mistakes: 0,
             missesHere: 0,
+            hint: null,       // learn: 'arrow' | 'piece' | 'none' for the current position
+            graded: false,    // learn: whether the current position has been scored yet
+            run: { positions: 0, fromMemory: 0, fresh: 0, missed: 0 },
             finished: false,
         };
 
@@ -276,21 +523,76 @@ document.addEventListener('DOMContentLoaded', () => {
         board.position('start', false);
         highlightLastMove();
 
-        // The line name stays hidden until the end; only show what you chose.
-        setWho(`You play ${side} · ${family ? familyName(family) : 'Any opening'}`);
+        if (mode === 'learn') {
+            const line = focusLine();
+            setWho(`Learning ${familyName(family)} as ${side}${line ? ` · ${line.name}` : ''}`);
+        } else {
+            // The line name stays hidden until the end; only show what you chose.
+            setWho(`You play ${side} · ${family ? familyName(family) : 'Any opening'}`);
+        }
         setFeedback(null);
         setAlt(null);
         setReply(null);
+        setNote(null);
         showActions('drill');
         renderMoves();
-        updateTurn();
+        renderMap();
 
-        if (game.turn() !== drill.userColor) setTimeout(playOpponentMove, MOVE_DELAY);
+        if (game.turn() === drill.userColor) prepareUserTurn();
+        else {
+            updateTurn();
+            setTimeout(playOpponentMove, MOVE_DELAY);
+        }
+    }
+
+    // Learn: the move to teach here, following the focused line when there is one,
+    // otherwise the most common move in the family.
+    function taughtSan(node) {
+        const line = focusLine();
+        const next = line && onFocusLine() ? line.moves[game.history().length] : null;
+        if (next && node.moves.has(next)) return next;
+        return [...node.moves.entries()].sort((a, b) => b[1].count - a[1].count)[0][0];
+    }
+
+    function showHint() {
+        clearHints();
+        if (!drill || drill.mode !== 'learn' || drill.finished) return;
+        const node = treeNode();
+        if (!node) return;
+        if (drill.hint === 'arrow') drawArrows([node.moves.get(taughtSan(node))]);
+        if (drill.hint === 'piece') markPieces([...new Set([...node.moves.values()].map(e => e.from))]);
+    }
+
+    function prepareUserTurn() {
+        if (drill.mode === 'learn') {
+            const box = boxOf(cardFor(drill.family, drill.userColor, positionKey(game.fen())));
+            drill.hint = box === 0 ? 'arrow' : box === 1 ? 'piece' : 'none';
+            drill.graded = false;
+            showHint();
+        }
+        updateTurn();
     }
 
     function countMistakeHere() {
         if (drill.missesHere === 0) drill.mistakes++;
         drill.missesHere++;
+    }
+
+    // Learn: score the current position once, on the first attempt.
+    function gradeHere(correct) {
+        if (drill.graded) return;
+        drill.graded = true;
+        drill.run.positions++;
+        if (!correct) drill.run.missed++;
+        else if (drill.hint === 'arrow') drill.run.fresh++;
+        else if (drill.hint === 'none') drill.run.fromMemory++;
+        grade(drill.family, drill.userColor, positionKey(game.fen()), correct);
+    }
+
+    function showNoteFor(san) {
+        if (drill.mode !== 'learn') return;
+        const text = getNotes(drill.family).get(positionKey(game.fen()));
+        if (text) addNote(san, text);
     }
 
     // Returns true when the move was a book move and has been played.
@@ -305,18 +607,52 @@ document.addEventListener('DOMContentLoaded', () => {
             game.undo();
             countMistakeHere();
             setFeedback('miss', `${move.san} isn't book here`);
-            setAlt(drill.missesHere === 1 ? 'Try another move.' : `Book moves: ${listJoin([...node.moves])}.`);
             setReply(null);
+            if (drill.mode === 'learn') {
+                gradeHere(false);
+                drill.hint = 'arrow';
+                showHint();
+                setAlt('Follow the arrow.');
+                updateTurn();
+                renderMap();
+            } else {
+                setAlt(drill.missesHere === 1 ? 'Try another move.' : `Book moves: ${listJoin([...node.moves])}.`);
+            }
             return false;
         }
 
+        if (drill.mode === 'learn') {
+            game.undo();
+            gradeHere(true);
+            game.move(move.san);
+            clearHints();
+        }
         drill.missesHere = 0;
         const alternatives = [...node.moves].filter(san => san !== move.san);
         setFeedback('ok', `${move.san} was book`);
         setAlt(alternatives.length ? `Also book there: ${listJoin(alternatives)}` : null);
         setReply(null);
+        setNote(null);
+        showNoteFor(move.san);
+        renderMap();
         afterMove();
         return true;
+    }
+
+    // Learn: pick the reply whose branch holds the most new or due positions, so each
+    // run goes where you're weakest. With nothing waiting, follow the book's weighting.
+    function targetedReply(node) {
+        const depth = depthFor(drill.family, drill.userColor);
+        const options = [...node.moves.entries()].map(([san, edge]) => ({
+            san, count: edge.count,
+            need: branchNeed(drill.tree, drill.family, drill.userColor, depth, edge.child),
+        }));
+        const needy = options.filter(o => o.need > 0);
+        const pool = needy.length ? needy : options;
+        const weight = o => (needy.length ? o.need : o.count);
+        let r = Math.random() * pool.reduce((sum, o) => sum + weight(o), 0);
+        for (const o of pool) { r -= weight(o); if (r <= 0) return o.san; }
+        return pool[pool.length - 1].san;
     }
 
     function playOpponentMove() {
@@ -325,12 +661,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // "Retry this line" repeats the opponent's previous choices where it can.
         const repeat = drill.replay[drill.opponentChoices.length];
-        const san = choices.includes(repeat) ? repeat : choices[Math.floor(Math.random() * choices.length)];
+        let san;
+        if (choices.includes(repeat)) san = repeat;
+        else if (drill.mode === 'learn') {
+            const line = focusLine();
+            const next = line && onFocusLine() ? line.moves[game.history().length] : null;
+            san = next && choices.includes(next) ? next : targetedReply(treeNode());
+        } else san = choices[Math.floor(Math.random() * choices.length)];
 
         game.move(san);
         drill.opponentChoices.push(san);
         board.position(game.fen());
         setReply(san);
+        if (game.history().length === 1) setNote(null);
+        showNoteFor(san);
         afterMove();
     }
 
@@ -342,13 +686,28 @@ document.addEventListener('DOMContentLoaded', () => {
             finishDrill(node);
             return;
         }
-        updateTurn();
-        if (game.turn() !== drill.userColor) setTimeout(playOpponentMove, MOVE_DELAY);
+        if (drill.mode === 'learn') {
+            const line = focusLine();
+            const tnode = treeNode();
+            const following = onFocusLine();
+            const beyond = tnode.ply >= depthFor(drill.family, drill.userColor);
+            if ((following && game.history().length >= line.moves.length) || (beyond && !following)) {
+                finishDrill(node);
+                return;
+            }
+        }
+        if (game.turn() === drill.userColor) prepareUserTurn();
+        else {
+            updateTurn();
+            setTimeout(playOpponentMove, MOVE_DELAY);
+        }
     }
 
     function finishDrill(node) {
         drill.finished = true;
+        drill.hint = null;
         clearSelection();
+        clearHints();
 
         // Every line that reaches the final position ends there, so these name the line.
         const seen = new Set();
@@ -357,44 +716,130 @@ document.addEventListener('DOMContentLoaded', () => {
             return !seen.has(key) && seen.add(key);
         });
 
-        if (ends.length) {
-            setFeedback('end', familyName(ends[0].family));
-            const also = ends.slice(1, 3).map(e => e.name);
-            setAlt(ends[0].name + (also.length ? ` (also: ${also.join('; ')})` : ''));
+        if (drill.mode === 'learn') {
+            const unlocked = maybeUnlock(drill.family, drill.userColor);
+            const { positions, fromMemory, fresh, missed } = drill.run;
+            setFeedback('end', 'Run complete');
+            setAlt(ends.length ? ends[0].name : null);
+            const parts = [`${positions} ${positions === 1 ? 'position' : 'positions'}`];
+            if (fromMemory) parts.push(`${fromMemory} from memory`);
+            if (fresh) parts.push(`${fresh} new`);
+            if (missed) parts.push(`${missed} to review`);
+            setResult(parts.join(' · ') + (unlocked ? '. The next moves are now unlocked.' : '.'));
+            renderMap();
         } else {
-            setFeedback('end', 'End of book');
-            setAlt(null);
+            if (ends.length) {
+                setFeedback('end', familyName(ends[0].family));
+                const also = ends.slice(1, 3).map(e => e.name);
+                setAlt(ends[0].name + (also.length ? ` (also: ${also.join('; ')})` : ''));
+            } else {
+                setFeedback('end', 'End of book');
+                setAlt(null);
+            }
+            setWho(`You played ${drill.side} · ${drill.family ? familyName(drill.family) : 'Any opening'}`);
+            setResult(drill.mistakes === 0
+                ? 'Played from memory with no mistakes.'
+                : `${drill.mistakes} ${drill.mistakes === 1 ? 'move' : 'moves'} needed another try.`);
         }
-        setWho(`You played ${drill.side} · ${drill.family ? familyName(drill.family) : 'Any opening'}`);
-        setResult(drill.mistakes === 0
-            ? 'Played from memory with no mistakes.'
-            : `${drill.mistakes} ${drill.mistakes === 1 ? 'move' : 'moves'} needed another try.`);
         updateTurn();
         showActions('end');
     }
 
+    // ---------- Learn: the family map ----------
+    // One row per line, one dot per move you make in it, coloured by how well you know it.
+
+    function renderMap() {
+        const card = $('mapCard');
+        card.hidden = !drill || drill.mode !== 'learn';
+        if (card.hidden) return;
+        const { family, userColor: color, tree } = drill;
+        const depth = depthFor(family, color);
+        const unlocked = traineeKeys(tree, color, depth);
+        const all = traineeKeys(tree, color);
+        const counts = { learned: 0, learning: 0, new: 0 };
+        let due = 0;
+        unlocked.forEach(k => {
+            const c = cardFor(family, color, k);
+            counts[statusOf(c)]++;
+            if (c && c.box > 0 && c.due <= Date.now()) due++;
+        });
+        const locked = all.size - unlocked.size;
+        $('mapHeading').textContent = familyName(family);
+        $('mapSummary').textContent =
+            `${counts.learned} known · ${counts.learning} learning · ${counts.new} new` +
+            (locked ? ` · ${locked} locked` : '') + (due ? `. ${due} due for review.` : '.');
+
+        const rows = openingsData[family].map((line, index) => {
+            const replay = new Chess();
+            const dots = [];
+            for (let ply = 0; ply < line.moves.length; ply++) {
+                const key = positionKey(replay.fen());
+                if ((ply % 2 === 0) === (color === 'w')) {
+                    const status = ply >= depth ? 'locked' : statusOf(cardFor(family, color, key));
+                    dots.push(`<i class="dot is-${status}"></i>`);
+                }
+                try { replay.move(line.moves[ply]); } catch (e) { break; }
+            }
+            const current = drill.focus === index ? ' aria-current="true"' : '';
+            const name = line.name.replace(/[&<>"]/g, ch => `&#${ch.charCodeAt(0)};`);
+            return `<button type="button" class="map-line" data-line="${index}"${current}>` +
+                `<span class="map-name">${name}</span><span class="dots">${dots.join('')}</span></button>`;
+        });
+        $('mapLines').innerHTML = rows.join('');
+    }
+
+    $('mapLines').addEventListener('click', event => {
+        const row = event.target.closest('.map-line');
+        if (!row || !drill) return;
+        startDrill({ mode: 'learn', side: drill.side, family: drill.family, focus: Number(row.dataset.line) });
+    });
+
     $('restartButton').addEventListener('click', () => {
-        if (drill) startDrill({ side: drill.side, family: drill.family });
+        if (drill) startDrill({ mode: drill.mode, side: drill.side, family: drill.family, focus: drill.focus });
     });
     $('bookButton').addEventListener('click', () => {
         if (!drill || drill.finished || game.turn() !== drill.userColor) return;
         countMistakeHere();
-        setAlt(`Book moves here: ${listJoin([...bookNode().moves])}.`);
+        if (drill.mode === 'learn') {
+            gradeHere(false);
+            drill.hint = 'arrow';
+            showHint();
+            updateTurn();
+            renderMap();
+        } else {
+            setAlt(`Book moves here: ${listJoin([...bookNode().moves])}.`);
+        }
     });
     $('practiceAgain').addEventListener('click', () => {
-        if (drill) startDrill({ side: drill.side, family: drill.family, replay: drill.opponentChoices });
+        if (drill) startDrill({ mode: drill.mode, side: drill.side, family: drill.family, replay: drill.opponentChoices, focus: drill.focus });
     });
     $('newOpening').addEventListener('click', () => {
-        if (drill) startDrill({ side: drill.side, family: drill.family });
+        if (drill) startDrill({ mode: drill.mode, side: drill.side, family: drill.family });
     });
 
     // ---------- New drill: colour and opening ----------
 
+    let selectedMode = 'drill';
     let selectedSide = 'White';
     let selectedFamily = '';
+    const modeButtons = document.querySelectorAll('[data-mode]');
     const sideButtons = document.querySelectorAll('[data-side]');
     const selectWrap = $('selectWrap');
     const openingButton = $('openingButton');
+
+    const MODE_HINTS = {
+        drill: 'Book replies at random; the line stays hidden until the end.',
+        learn: 'Learn one opening position by position, with the ideas behind the moves.',
+    };
+
+    function selectMode(mode) {
+        selectedMode = mode;
+        modeButtons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+        $('modeHint').textContent = MODE_HINTS[mode];
+        $('startButton').textContent = mode === 'learn' ? 'Begin learning' : 'Begin drill';
+        renderPicker();
+    }
+    modeButtons.forEach(b => b.addEventListener('click', () => selectMode(b.dataset.mode)));
 
     function selectSide(side) {
         selectedSide = side;
@@ -419,8 +864,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const item = (value, label, count) =>
             `<button type="button" class="picker-item" role="option" data-value="${value}" aria-selected="false">${tick}${label}<span class="count">${count}</span></button>`;
 
+        // Learn mode teaches one family at a time, so "Any opening" isn't offered there.
+        const learning = selectedMode === 'learn';
+        if (learning && !selectedFamily) selectedFamily = own[0] || '';
         $('pickerOptions').innerHTML =
-            item('', 'Any opening', `${total} lines`) +
+            (learning ? '' : item('', 'Any opening', `${total} lines`)) +
             `<p class="picker-group">${selectedSide === 'White' ? 'Your openings' : 'Your defenses'}</p>` +
             own.map(k => item(k, familyName(k), openingsData[k].length)).join('') +
             `<p class="picker-group">${selectedSide === 'White' ? "Against Black's defenses" : "Against White's openings"}</p>` +
@@ -474,7 +922,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $('startButton').addEventListener('click', async () => {
         await dataReady;
         closePicker(false);
-        startDrill({ side: selectedSide, family: selectedFamily || null });
+        startDrill({ mode: selectedMode, side: selectedSide, family: selectedFamily || null });
     });
 
     // ---------- Day / Night ----------
@@ -513,14 +961,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (action === 'makeMove' && drill && !drill.finished && game.turn() === drill.userColor) {
             const node = bookNode();
             if (!node || !node.moves.size) return;
+            // Goes through the normal move check, so Learn mode scores it like a real move.
             const choices = [...node.moves];
             const san = choices[Math.floor(Math.random() * choices.length)];
-            game.move(san);
-            board.position(game.fen());
-            setFeedback('ok', `${san} was book`);
-            setAlt(null);
-            setReply(null);
-            afterMove();
+            const move = new Chess(game.fen()).move(san);
+            if (tryUserMove(move.from, move.to)) board.position(game.fen());
         }
     });
 });

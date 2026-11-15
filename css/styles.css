@@ -24,6 +24,8 @@
     --last-light: #b08d57;
     --last-dark: #e2c48c;
     --select-ring: #7a2e2e;
+    --arrow: rgba(176, 141, 87, 0.85);
+    --arrow-solid: #b08d57;
     --scrim: rgba(12, 16, 14, 0.5);
 
     --r-card: 18px;
@@ -55,6 +57,8 @@
         --last-light: #a8803f;
         --last-dark: #e2c48c;
         --select-ring: #d77a70;
+        --arrow: rgba(226, 196, 140, 0.88);
+        --arrow-solid: #e2c48c;
     }
 }
 :root[data-theme="dark"] {
@@ -77,6 +81,8 @@
     --last-light: #a8803f;
     --last-dark: #e2c48c;
     --select-ring: #d77a70;
+    --arrow: rgba(226, 196, 140, 0.88);
+    --arrow-solid: #e2c48c;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -127,6 +133,13 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 #board .is-target::after { content: ""; position: absolute; left: 50%; top: 50%; width: 26%; height: 26%; transform: translate(-50%, -50%); border-radius: 50%; background: var(--select-ring); opacity: 0.45; pointer-events: none; }
 #board .is-target.has-piece::after { width: 86%; height: 86%; background: none; border: 3px solid var(--select-ring); }
 
+/* Learn hints: a brass arrow for a new move, a brass ring on the piece to move */
+#board { position: relative; }
+.board-arrows { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; overflow: visible; }
+.board-arrows line { stroke: var(--arrow); stroke-linecap: round; }
+.board-arrows polygon { fill: var(--arrow); stroke: var(--arrow); stroke-linejoin: round; stroke-width: 2; }
+#board .hint-from { background-image: radial-gradient(circle, var(--arrow) 0 40%, transparent 42%); }
+
 /* ---------- Panel cards ---------- */
 .panel { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .card { position: relative; border: 1px solid var(--brass-line); border-radius: var(--r-card); padding: 20px 22px; background: var(--card-bg); }
@@ -149,6 +162,29 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .alt { margin-top: 4px; font-style: italic; color: var(--text-soft); }
 .reply { margin-top: 10px; color: var(--text-soft); }
 .reply b { font-weight: 600; color: var(--accent); }
+/* The idea behind a move: a brass-ruled aside, set left for easy reading */
+.note { margin: 14px auto 0; max-width: 34em; padding: 10px 14px; border-left: 2px solid var(--brass); border-radius: 0 10px 10px 0; background: var(--card-bg); text-align: left; font-size: 16px; line-height: 1.45; color: var(--text); }
+.note b { font-family: var(--serif-display); font-weight: 400; color: var(--heading); margin-right: 4px; }
+.note-row { display: block; }
+.note-row + .note-row { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--brass-line); }
+
+/* Family map */
+.map-summary { color: var(--text-soft); font-size: 15px; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 8px 0 10px; font-size: 13px; color: var(--text-soft); }
+.map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.map-hint { margin-bottom: 4px; font-size: 14px; font-style: italic; color: var(--text-soft); }
+.map-lines { max-height: 300px; overflow: auto; margin: 0 -10px; padding: 0 2px; }
+.map-line { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; padding: 6px 8px; border-radius: 10px; text-align: left; }
+.map-line:hover, .map-line:focus-visible { background: var(--card-bg); outline: none; }
+.map-line[aria-current="true"] { background: var(--card-bg); box-shadow: inset 2px 0 0 var(--brass); }
+.map-name { font-size: 15px; line-height: 1.25; color: var(--text); }
+.dots { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 3px; flex: none; max-width: 45%; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.dot.is-learned { background: var(--label); }
+.dot.is-learning { background: var(--brass); }
+.dot.is-new { border: 1.5px solid var(--brass); }
+.dot.is-locked { border: 1px dashed var(--text-soft); opacity: 0.5; }
+.mode-hint { margin: 8px 4px 0; font-size: 14px; font-style: italic; color: var(--text-soft); }
 
 /* Turn indicator: a pawn medallion between two brass waves */
 .turn { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--heading); font-family: var(--serif-caps); font-size: 14px; letter-spacing: 0.2em; }
