@@ -2,87 +2,145 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chess Opening Drills</title>
-    <link rel="stylesheet" href="css/chessboard-1.0.0.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Chess Opening Trainer</title>
+    <script>
+        // Apply a saved Day/Night choice before first paint; with none, CSS follows the browser.
+        (function () {
+            try {
+                var theme = localStorage.getItem('theme');
+                if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+            } catch (e) { /* storage unavailable */ }
+        })();
+    </script>
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Marcellus+SC&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/chessboard-1.0.0.css">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <link href="https://fonts.cdnfonts.com/css/futura-std-4" rel="stylesheet">
-    <style>@import url('https://fonts.cdnfonts.com/css/futura-std-4');</style>
-    <link rel="icon" type="image/x-icon" href="img/android-chrome-512x512.png">
 </head>
 <body>
-    <!-- Toggle button for sidebar -->
-    <span id="sidebarToggle">☰ Choose Opening</span>
-    
-    <!-- Sidebar for choosing opening families -->
-    <div id="sidebar" class="sidebar-layout">
-        <!-- Dropdown for White Openings -->
-        <div class="menu-item dropdown">
-            <span>
-                <img src="./img/chesspieces/wikipedia/wN.png" alt="white piece" class="icon">
-                Play White
-            </span>
-            <div class="dropdown-content">
-                <a href="#" class="menu-item" data-opening="Ruy Lopez">Ruy Lopez</a>
-                <a href="#" class="menu-item" data-opening="Italian Game">Italian Game</a>
-                <a href="#" class="menu-item" data-opening="King's Gambit">King's Gambit</a>
-                <a href="#" class="menu-item" data-opening="Vienna Game">Vienna Game</a>
-                <a href="#" class="menu-item" data-opening="English Opening">English Opening</a>
-                <a href="#" class="menu-item" data-opening="Queen's Gambit">Queen's Gambit</a>
+    <!-- Ornament symbols reused across the page -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+            <symbol id="whiplash-corner" viewBox="0 0 64 64">
+                <g fill="none" stroke="currentColor" stroke-linecap="round">
+                    <path d="M4 60 C4 26, 26 4, 60 4" stroke-width="2"/>
+                    <path d="M12 60 C12 33, 33 12, 60 12" stroke-width="1"/>
+                    <path d="M19 19 C30 26, 38 19, 35 10 C32 4, 24 7, 26 13" stroke-width="1.6"/>
+                </g>
+                <circle cx="19" cy="19" r="3.5" fill="currentColor"/>
+            </symbol>
+            <symbol id="wave" viewBox="0 0 100 10">
+                <path d="M0 5 C20 -1, 30 11, 50 5 S80 -1, 100 5" fill="none" stroke="currentColor" stroke-width="1"/>
+            </symbol>
+        </defs>
+    </svg>
+
+    <header class="header">
+        <h1 class="wordmark"><small>Chess</small>Opening Trainer</h1>
+        <svg class="rule" viewBox="0 0 400 24" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true">
+            <path d="M0 12 H170"/><path d="M230 12 H400"/>
+            <path d="M170 12 C185 12, 188 3, 200 3 C212 3, 215 12, 230 12"/>
+            <path d="M170 12 C185 12, 188 21, 200 21 C212 21, 215 12, 230 12"/>
+        </svg>
+        <button class="theme-toggle" id="themeToggle" type="button">Night</button>
+    </header>
+
+    <main class="layout">
+        <section class="board-column" aria-label="Board">
+            <div class="frame">
+                <svg class="corner tl" viewBox="0 0 64 64" aria-hidden="true"><use href="#whiplash-corner"/></svg>
+                <svg class="corner tr" viewBox="0 0 64 64" aria-hidden="true"><use href="#whiplash-corner"/></svg>
+                <svg class="corner bl" viewBox="0 0 64 64" aria-hidden="true"><use href="#whiplash-corner"/></svg>
+                <svg class="corner br" viewBox="0 0 64 64" aria-hidden="true"><use href="#whiplash-corner"/></svg>
+                <div id="board"></div>
             </div>
-        </div>
+        </section>
 
-        <!-- Dropdown for Black Openings -->
-        <div class="menu-item dropdown">
-            <span>
-                <img src="./img/chesspieces/wikipedia/bN.png" alt="black piece" class="icon">
-                Play Black
-            </span>
-            <div class="dropdown-content">
-                <a href="#" class="menu-item" data-opening="Sicilian">Sicilian Defense</a>
-                <a href="#" class="menu-item" data-opening="French">French Defense</a>
-                <a href="#" class="menu-item" data-opening="Caro-Kann">Caro-Kann Defense</a>
-                <a href="#" class="menu-item" data-opening="Pirc">Pirc Defense</a>
-                <a href="#" class="menu-item" data-opening="King's Indian">King's Indian Defense</a>
-                <a href="#" class="menu-item" data-opening="Slav">Slav Defense</a>
-                <a href="#" class="menu-item" data-opening="Nimzo-Indian">Nimzo-Indian Defense</a>
-                <a href="#" class="menu-item" data-opening="Grünfeld">Grünfeld Defense</a>
-                <a href="#" class="menu-item" data-opening="Alekhine">Alekhine's Defense</a>
-                <a href="#" class="menu-item" data-opening="Dutch">Dutch Defense</a>
-                <a href="#" class="menu-item" data-opening="Benoni">Benoni Defense</a>
-                <a href="#" class="menu-item" data-opening="Modern">Modern Defense</a>
-                <a href="#" class="menu-item" data-opening="Philidor">Philidor Defense</a>
-                <a href="#" class="menu-item" data-opening="Scandinavian">Scandinavian Defense</a>
-                <a href="#" class="menu-item" data-opening="Petrov">Petrov's Defense</a>
-            </div>
-        </div>
-    </div>
- 
+        <aside class="panel">
+            <section class="card now" aria-live="polite">
+                <div class="card-head">
+                    <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
+                    <h2 id="nowHeading">Now playing</h2>
+                    <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
+                </div>
+                <p class="who" id="openingName">Choose a colour and an opening, then begin a drill.</p>
 
-    <!-- Main content area -->
-    <div id="gameContainer">
-        <h1 id="title">Chess Opening Trainer</h1>
-        <div id="board" style="width: 600px; height: 600px;"></div>
-        <p id="openingName"></p>
-        <p id="status"></p>
-        
-        <div id="buttonContainer">
-            <button id="practiceAgain" style="display: none;">Practice Again</button>
-            <button id="newOpening" style="display: none;">Train New Variation</button>
-        </div>
-    </div>
+                <p class="feedback" id="feedback" hidden>
+                    <svg class="feedback-icon ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M7 12.5 L10.5 16 L17 8.5"/></svg>
+                    <svg class="feedback-icon miss" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M8.5 8.5 L15.5 15.5 M15.5 8.5 L8.5 15.5"/></svg>
+                    <span id="feedbackText"></span>
+                </p>
+                <p class="alt" id="altLine" hidden></p>
+                <p class="reply" id="replyLine" hidden></p>
 
-     <!-- Dark Mode Toggle Button -->
-     <div class="tdnn">
-        <div class="moon"></div>
-    </div>
-    
+                <div class="turn" id="turn" hidden>
+                    <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
+                    <span class="medallion"><img class="turn-piece" id="turnPiece" src="img/chesspieces/nouveau/wP.svg" alt=""></span>
+                    <span id="turnText">White to move</span>
+                    <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
+                </div>
+                <p class="turn-note" id="turnNote" hidden></p>
+
+                <div class="now-actions" id="drillActions" hidden>
+                    <button class="text-btn" id="restartButton" type="button">Restart</button>
+                    <button class="text-btn" id="bookButton" type="button">Show book moves</button>
+                </div>
+                <div class="now-actions" id="endActions" hidden>
+                    <button class="text-btn" id="practiceAgain" type="button">Retry this line</button>
+                    <button class="text-btn" id="newOpening" type="button">New drill</button>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-head">
+                    <h2>Moves</h2>
+                    <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
+                </div>
+                <div class="moves" id="moveList"><p class="moves-empty">No moves yet.</p></div>
+            </section>
+
+            <section class="card">
+                <div class="card-head">
+                    <h2>New drill</h2>
+                    <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
+                </div>
+                <div class="seg" role="group" aria-label="Play as">
+                    <button type="button" data-side="White" aria-pressed="true">White</button>
+                    <button type="button" data-side="Black" aria-pressed="false">Black</button>
+                </div>
+
+                <span class="field-label" id="openingLabel">Opening</span>
+                <div class="select-wrap" id="selectWrap">
+                    <button class="select" id="openingButton" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="openingLabel openingValue">
+                        <span id="openingValue">Any opening</span>
+                        <svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1 L6 6 L11 1"/></svg>
+                    </button>
+                    <div class="picker-scrim" id="pickerScrim"></div>
+                    <div class="picker" id="picker" role="listbox" aria-labelledby="openingLabel" tabindex="-1">
+                        <div class="picker-head">
+                            <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
+                            <p>Choose an opening</p>
+                        </div>
+                        <div id="pickerOptions"></div>
+                    </div>
+                </div>
+
+                <button class="primary" id="startButton" type="button">Begin drill</button>
+            </section>
+        </aside>
+    </main>
+
     <!-- chess.js library -->
     <script src="js/chess.js"></script>
-    
+
     <!-- chessboard.js library -->
     <script src="js/chessboard-1.0.0.js"></script>
-    
+
     <!-- my script -->
     <script src="js/script.js"></script>
 </body>
