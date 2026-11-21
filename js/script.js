@@ -410,56 +410,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---------- Learn hints: arrows and marked pieces ----------
 
-    // The Learn arrow, in the set's own language: a whiplash shaft that swells from a
-    // brass bead on the starting square to a spade-shaped head, with one dark outline
-    // around the lot (drawn like the pieces: outline layer underneath, fill on top).
-    function arrowShapes(a, b, size) {
-        const f = n => n.toFixed(1);
-        const len = Math.hypot(b.x - a.x, b.y - a.y);
-        const ux = (b.x - a.x) / len, uy = (b.y - a.y) / len;
-        const px = -uy, py = ux;                                // left-hand normal
-        const tip = { x: b.x - ux * size * 0.1, y: b.y - uy * size * 0.1 };
-        const bow = len * 0.1;                                  // the gentle whiplash curve
-        const ctrl = { x: (a.x + tip.x) / 2 + px * bow, y: (a.y + tip.y) / 2 + py * bow };
-
-        // The head points along the curve's final direction.
-        let dx = tip.x - ctrl.x, dy = tip.y - ctrl.y;
-        const dl = Math.hypot(dx, dy); dx /= dl; dy /= dl;
-        const nx = -dy, ny = dx;
-        const headLen = size * 0.5, headHalf = size * 0.31;
-        const base = { x: tip.x - dx * headLen, y: tip.y - dy * headLen };
-
-        // Shaft: sampled along the curve from the bead to the head, widening as it goes.
-        const quad = t => ({
-            x: (1 - t) ** 2 * a.x + 2 * (1 - t) * t * ctrl.x + t * t * base.x,
-            y: (1 - t) ** 2 * a.y + 2 * (1 - t) * t * ctrl.y + t * t * base.y,
-        });
-        const left = [], right = [];
-        const steps = 18;
-        for (let k = 0; k <= steps; k++) {
-            const t = k / steps;
-            const p = quad(t), q = quad(Math.min(t + 0.01, 1)), o = quad(Math.max(t - 0.01, 0));
-            let tx = q.x - o.x, ty = q.y - o.y;
-            const tl = Math.hypot(tx, ty) || 1; tx /= tl; ty /= tl;
-            const half = size * (0.05 + 0.06 * t);
-            left.push(`${f(p.x - ty * half)} ${f(p.y + tx * half)}`);
-            right.push(`${f(p.x + ty * half)} ${f(p.y - tx * half)}`);
-        }
-        const shaft = `M${left.join(' L')} L${right.reverse().join(' L')} Z`;
-
-        // Head: concave sides sweeping back to curled barbs, like a spade or a leaf.
-        const pt = (along, across) => `${f(base.x + dx * along + nx * across)} ${f(base.y + dy * along + ny * across)}`;
-        const neck = size * 0.1;
-        const head = `M${f(tip.x)} ${f(tip.y)}` +
-            ` Q${pt(headLen * 0.45, headHalf * 0.35)} ${pt(-headLen * 0.12, headHalf)}` +
-            ` Q${pt(headLen * 0.02, headHalf * 0.45)} ${pt(headLen * 0.05, neck)}` +
-            ` L${pt(headLen * 0.05, -neck)}` +
-            ` Q${pt(headLen * 0.02, -headHalf * 0.45)} ${pt(-headLen * 0.12, -headHalf)}` +
-            ` Q${pt(headLen * 0.45, -headHalf * 0.35)} ${f(tip.x)} ${f(tip.y)} Z`;
-
-        return { shaft, head, bead: { x: a.x, y: a.y, r: size * 0.14 } };
-    }
-
+    // The Learn arrow: a double brass rule, like the board's frame, closing into a slim
+    // head, with a small bead on the starting square. Sizes scale with the square, with a
+    // floor so the rules stay visible on a phone.
     let arrows = [];
     function drawArrows(list) {
         arrows = list;
@@ -474,23 +427,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const ns = 'http://www.w3.org/2000/svg';
         const el = (tag, attrs) => {
             const node = document.createElementNS(ns, tag);
-            for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+            for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, typeof v === 'number' ? v.toFixed(1) : v);
             return node;
         };
         const svg = el('svg', { id: 'boardArrows', class: 'board-arrows', 'aria-hidden': 'true' });
         for (const { from, to } of list) {
             const a = centre(from), b = centre(to);
-            if (!a || !b || !a.size || (a.x === b.x && a.y === b.y)) continue;   // board not laid out yet
-            const { shaft, head, bead } = arrowShapes(a, b, a.size);
-            const outline = el('g', { class: 'arrow-outline', 'stroke-width': (a.size * 0.06).toFixed(1) });
-            const fill = el('g', { class: 'arrow-fill' });
-            for (const g of [outline, fill]) {
-                g.append(el('path', { d: shaft }), el('path', { d: head }),
-                    el('circle', { cx: bead.x.toFixed(1), cy: bead.y.toFixed(1), r: bead.r.toFixed(1) }));
+            if (!a || !b || !a.size) continue;   // board not laid out yet
+            const len = Math.hypot(b.x - a.x, b.y - a.y);
+            if (!len) continue;
+            const size = a.size;
+            const ux = (b.x - a.x) / len, uy = (b.y - a.y) / len, nx = -uy, ny = ux;
+            const rule = Math.max(1.5, size * 0.03), gap = Math.max(2.5, size * 0.06);
+            const headLen = size * 0.34, headHalf = Math.max(6, size * 0.16);
+            const start = { x: a.x + ux * size * 0.22, y: a.y + uy * size * 0.22 };
+            const tip = { x: b.x - ux * size * 0.12, y: b.y - uy * size * 0.12 };
+            const base = { x: tip.x - ux * headLen, y: tip.y - uy * headLen };
+            const end = { x: base.x + ux * size * 0.08, y: base.y + uy * size * 0.08 };
+            const g = el('g', { class: 'arrow' });
+            for (const side of [1, -1]) {
+                g.append(el('line', {
+                    x1: start.x + nx * gap * side, y1: start.y + ny * gap * side,
+                    x2: end.x + nx * gap * side, y2: end.y + ny * gap * side, 'stroke-width': rule,
+                }));
             }
-            // A small highlight on the bead, as on the pieces.
-            fill.append(el('circle', { class: 'arrow-glint', cx: (bead.x - bead.r * 0.3).toFixed(1), cy: (bead.y - bead.r * 0.3).toFixed(1), r: (bead.r * 0.35).toFixed(1) }));
-            svg.append(outline, fill);
+            const notch = { x: base.x + ux * size * 0.07, y: base.y + uy * size * 0.07 };
+            g.append(el('path', { d: `M${tip.x.toFixed(1)} ${tip.y.toFixed(1)}` +
+                ` L${(base.x + nx * headHalf).toFixed(1)} ${(base.y + ny * headHalf).toFixed(1)}` +
+                ` L${notch.x.toFixed(1)} ${notch.y.toFixed(1)}` +
+                ` L${(base.x - nx * headHalf).toFixed(1)} ${(base.y - ny * headHalf).toFixed(1)} Z` }));
+            g.append(el('circle', { cx: a.x + ux * size * 0.14, cy: a.y + uy * size * 0.14, r: Math.max(2.5, size * 0.05) }));
+            svg.append(g);
         }
         host.append(svg);
     }

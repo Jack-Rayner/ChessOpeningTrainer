@@ -25,9 +25,7 @@
     --last-dark: #e2c48c;
     --select-ring: #7a2e2e;
     --arrow: rgba(176, 141, 87, 0.85);
-    --arrow-solid: #c49a5a;
-    --arrow-line: #4a3519;
-    --arrow-glint: #ecd3a2;
+    --arrow-solid: #9a7440;
     --scrim: rgba(12, 16, 14, 0.5);
 
     --r-card: 18px;
@@ -60,9 +58,7 @@
         --last-dark: #e2c48c;
         --select-ring: #d77a70;
         --arrow: rgba(226, 196, 140, 0.88);
-        --arrow-solid: #e2c48c;
-        --arrow-line: #241a0e;
-        --arrow-glint: #f6e6c2;
+        --arrow-solid: #a87d3e;
     }
 }
 :root[data-theme="dark"] {
@@ -86,9 +82,7 @@
     --last-dark: #e2c48c;
     --select-ring: #d77a70;
     --arrow: rgba(226, 196, 140, 0.88);
-    --arrow-solid: #e2c48c;
-    --arrow-line: #241a0e;
-    --arrow-glint: #f6e6c2;
+    --arrow-solid: #a87d3e;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -142,10 +136,9 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 /* Learn hints: a brass arrow for a new move, a brass ring on the piece to move */
 #board { position: relative; }
 .board-arrows { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; overflow: visible; }
-.board-arrows { opacity: 0.94; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25)); }
-.board-arrows .arrow-outline { fill: var(--arrow-line); stroke: var(--arrow-line); stroke-linejoin: round; }
-.board-arrows .arrow-fill { fill: var(--arrow-solid); }
-.board-arrows .arrow-glint { fill: var(--arrow-glint); }
+.board-arrows .arrow { opacity: 0.95; }
+.board-arrows line { stroke: var(--arrow-solid); stroke-linecap: round; }
+.board-arrows path, .board-arrows circle { fill: var(--arrow-solid); }
 #board .hint-from { background-image: radial-gradient(circle, var(--arrow) 0 40%, transparent 42%); }
 
 /* ---------- Panel cards ---------- */
