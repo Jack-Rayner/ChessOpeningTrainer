@@ -8,15 +8,21 @@ fit on a phone screen.
 PLANS: one card per family, shown at the start of a Learn run: the idea of the
 opening and each side's plan.
 
+STRATEGY (in tools/strategy.py): 'Where next' notes for each variation, shown when a
+line ends.
+
 Usage (from the repository root):  python3 tools/build_notes.py
 Checks every move sequence is legal and occurs in that family's lines, then writes
-data/notes.json and data/plans.json. Needs python-chess.
+data/notes.json, data/plans.json and data/strategy.json. Needs python-chess.
 """
 import json
 import sys
 from pathlib import Path
 
 import chess
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from strategy import STRATEGY  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 MAX_WORDS = 24
@@ -552,6 +558,25 @@ def main():
                 print(f'NOT IN A LINE  {fam}: {moves}'); problems += 1
             if len(text.split()) > MAX_WORDS:
                 print(f'TOO LONG ({len(text.split())} words)  {fam}: {moves}')
+    # Strategy: keys must start real lines; report lines that fall back to the plan card.
+    uncovered = 0
+    for fam, entries in STRATEGY.items():
+        lines = [' '.join(l['moves']) for l in data[fam]]
+        for key, entry in entries.items():
+            if not any(line == key or line.startswith(key + ' ') for line in lines):
+                print(f'STRATEGY NOT IN A LINE  {fam}: {key}'); problems += 1
+            for field in ('aim', 'White', 'Black'):
+                if len(entry[field].split()) > MAX_WORDS:
+                    print(f'TOO LONG ({len(entry[field].split())} words)  strategy {fam}: {key} [{field}]')
+        for l in data[fam]:
+            line = ' '.join(l['moves'])
+            if not any(line == k or line.startswith(k + ' ') for k in entries):
+                uncovered += 1
+                print(f'  plan card only  {fam}: {l["name"]}')
+    for fam in set(data) - set(STRATEGY):
+        print(f'NO STRATEGY  {fam}'); problems += 1
+    print(f'{sum(len(v) for v in STRATEGY.values())} strategy notes; {uncovered} lines fall back to the plan card')
+
     for fam in set(data) - set(NOTES):
         print(f'NO NOTES  {fam}'); problems += 1
     for fam in set(data) - set(PLANS):
@@ -560,7 +585,7 @@ def main():
     print(f'{total} notes and {len(PLANS)} plans across {len(NOTES)} families, {problems} problems')
     if problems:
         sys.exit(1)
-    for name, obj in (('notes', NOTES), ('plans', PLANS)):
+    for name, obj in (('notes', NOTES), ('plans', PLANS), ('strategy', STRATEGY)):
         with open(ROOT / 'data' / f'{name}.json', 'w') as f:
             json.dump(obj, f, indent=4, ensure_ascii=False)
             f.write('\n')

@@ -96,6 +96,7 @@
                     <button class="text-btn" id="practiceAgain" type="button">Retry this line</button>
                     <button class="text-btn" id="newOpening" type="button">New drill</button>
                 </div>
+                <div class="where-next" id="whereNext" hidden></div>
             </section>
 
             <section class="card map-card sheetable" id="mapCard" data-sheet="map" data-collapse="map" hidden>
@@ -184,9 +185,13 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="18" r="2"/><path d="M8 6 C13 6, 13 12, 16 12 M8 18 C13 18, 13 12, 16 12"/></svg>
             Map
         </button>
+        <button type="button" class="begin" id="beginButton">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5 L18.5 12 L8 18.5 Z"/></svg>
+            <span id="beginLabel">Begin</span>
+        </button>
         <button type="button" data-open-sheet="setup">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5 V19 M5 12 H19"/></svg>
-            New drill
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 7 H20 M4 17 H20"/><circle cx="9" cy="7" r="2.2" fill="var(--bg)"/><circle cx="15" cy="17" r="2.2" fill="var(--bg)"/></svg>
+            Setup
         </button>
     </nav>
 

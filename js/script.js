@@ -41,12 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let openingsData = {};
     let notesData = {};
     let plansData = {};
+    let strategyData = {};
     // Notes and plans are optional: Learn mode works without them.
     const optionalJson = url => fetch(url)
         .then(response => (response.ok ? response.json() : {}))
         .catch(() => ({}));
-    const notesReady = Promise.all([optionalJson('./data/notes.json'), optionalJson('./data/plans.json')])
-        .then(([notes, plans]) => { notesData = notes; plansData = plans; });
+    const notesReady = Promise.all(['notes', 'plans', 'strategy'].map(name => optionalJson(`./data/${name}.json`)))
+        .then(([notes, plans, strategy]) => { notesData = notes; plansData = plans; strategyData = strategy; });
     const dataReady = fetch('./data/openings.json')
         .then(response => {
             if (!response.ok) throw new Error('Failed to load openings');
@@ -55,7 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(async data => {
             openingsData = data;
             await notesReady;
+            restoreSetup();
             renderPicker();
+            showReady();
         })
         .catch(error => {
             console.error(error);
@@ -600,6 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setAlt(null);
         setReply(null);
         setNote(null);
+        $('whereNext').hidden = true;
         if (mode === 'learn') showPlan(family, side);
         showActions('drill');
         renderMoves();
@@ -774,11 +778,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // The strategy for the line just played: the most specific variation whose moves the
+    // line starts with, falling back to the family's plan card.
+    function strategyFor(family, moves) {
+        const entries = strategyData[family] || {};
+        const line = moves.join(' ');
+        let best = null;
+        for (const key of Object.keys(entries)) {
+            if ((line === key || line.startsWith(`${key} `)) && (!best || key.length > best.length)) best = key;
+        }
+        if (best) return entries[best];
+        const plan = plansData[family];
+        return plan && { aim: plan.idea, White: plan.White, Black: plan.Black };
+    }
+
+    function showWhereNext(family, moves) {
+        const el = $('whereNext');
+        const entry = family && strategyFor(family, moves);
+        el.hidden = !entry;
+        if (!entry) return;
+        const you = drill.side, them = you === 'White' ? 'Black' : 'White';
+        const esc = t => t.replace(/[&<>"]/g, ch => `&#${ch.charCodeAt(0)};`);
+        el.innerHTML = '<p class="wn-head">Where next</p>' +
+            `<p class="wn-aim">${esc(entry.aim)}</p>` +
+            `<p><b>You, ${you}:</b> ${esc(entry[you])}</p>` +
+            `<p><b>Them, ${them}:</b> ${esc(entry[them])}</p>`;
+    }
+
     function finishDrill(node) {
         drill.finished = true;
         drill.hint = null;
         clearSelection();
         clearHints();
+        setNote(null);
 
         // Every line that reaches the final position ends there, so these name the line.
         const seen = new Set();
@@ -812,6 +844,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? 'Played from memory with no mistakes.'
                 : `${drill.mistakes} ${drill.mistakes === 1 ? 'move' : 'moves'} needed another try.`);
         }
+        // Use the named line's moves when the game reached its end, else the moves played.
+        const end = ends.find(e => e.family === (drill.family || e.family));
+        const named = end && openingsData[end.family].find(l => l.name === end.name);
+        showWhereNext(end ? end.family : drill.family, named ? named.moves : game.history());
         updateTurn();
         showActions('end');
     }
@@ -912,12 +948,35 @@ document.addEventListener('DOMContentLoaded', () => {
         learn: 'Learn one opening position by position, with the ideas behind the moves.',
     };
 
+    // Your last choices are remembered, so the phone's Begin button starts straight away.
+    function saveSetup() {
+        try {
+            localStorage.setItem('setup', JSON.stringify({ mode: selectedMode, side: selectedSide, family: selectedFamily }));
+        } catch (e) { /* ignore */ }
+    }
+    function restoreSetup() {
+        let saved = null;
+        try { saved = JSON.parse(localStorage.getItem('setup')); } catch (e) { /* ignore */ }
+        if (!saved) return;
+        if (saved.side === 'White' || saved.side === 'Black') selectSide(saved.side);
+        if (saved.mode === 'drill' || saved.mode === 'learn') selectMode(saved.mode);
+        if (!saved.family || openingsData[saved.family]) chooseOpening(saved.family || '');
+    }
+    const setupSummary = () =>
+        `${selectedMode === 'learn' ? 'Learn' : 'Drill'} · ${selectedSide} · ${selectedFamily ? familyName(selectedFamily) : 'Any opening'}`;
+    function showReady() {
+        saveSetup();
+        if (drill) return;
+        setWho(`Ready: ${setupSummary()}. Press Begin to start, or change the settings first.`);
+    }
+
     function selectMode(mode) {
         selectedMode = mode;
         modeButtons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
         $('modeHint').textContent = MODE_HINTS[mode];
         $('startButton').textContent = mode === 'learn' ? 'Begin learning' : 'Begin drill';
         renderPicker();
+        showReady();
     }
     modeButtons.forEach(b => b.addEventListener('click', () => selectMode(b.dataset.mode)));
 
@@ -925,6 +984,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedSide = side;
         sideButtons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.side === side)));
         renderPicker();
+        showReady();
     }
     sideButtons.forEach(b => b.addEventListener('click', () => selectSide(b.dataset.side)));
 
@@ -984,6 +1044,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const item = event.target.closest('.picker-item');
         if (!item) return;
         chooseOpening(item.dataset.value);
+        showReady();
         closePicker();
     });
     $('picker').addEventListener('keydown', event => {
@@ -999,11 +1060,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!selectWrap.contains(event.target)) closePicker(false);
     });
 
-    $('startButton').addEventListener('click', async () => {
+    async function beginFromSetup() {
         await dataReady;
         closePicker(false);
         startDrill({ mode: selectedMode, side: selectedSide, family: selectedFamily || null });
-    });
+        $('beginLabel').textContent = 'Next';
+    }
+    $('startButton').addEventListener('click', beginFromSetup);
+    $('beginButton').addEventListener('click', beginFromSetup);
 
     // ---------- Panels: folding cards (desktop) and bottom sheets (phones) ----------
 
