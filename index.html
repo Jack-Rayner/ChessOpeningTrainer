@@ -59,6 +59,7 @@
                 <svg class="corner br" viewBox="0 0 64 64" aria-hidden="true"><use href="#whiplash-corner"/></svg>
                 <div id="board"></div>
             </div>
+            <ol class="move-strip" id="moveStrip" aria-label="Moves" hidden></ol>
         </section>
 
         <aside class="panel">
@@ -97,12 +98,15 @@
                 </div>
             </section>
 
-            <section class="card map-card" id="mapCard" hidden>
+            <section class="card map-card sheetable" id="mapCard" data-sheet="map" data-collapse="map" hidden>
                 <div class="card-head">
                     <h2 id="mapHeading">Family map</h2>
                     <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
+                    <button class="card-toggle" type="button" aria-expanded="true" aria-controls="mapBody" aria-label="Fold the map"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1 L6 6 L11 1"/></svg></button>
+                    <button class="sheet-close" type="button" aria-label="Close"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3.5 3.5 L12.5 12.5 M12.5 3.5 L3.5 12.5"/></svg></button>
                 </div>
                 <p class="map-summary" id="mapSummary"></p>
+                <div class="card-body" id="mapBody">
                 <div class="map-legend" aria-hidden="true">
                     <span><i class="dot is-learned"></i>Known</span>
                     <span><i class="dot is-learning"></i>Learning</span>
@@ -111,21 +115,29 @@
                 </div>
                 <p class="map-hint">Tap a line to study just that line.</p>
                 <div class="map-lines" id="mapLines"></div>
+                </div>
             </section>
 
-            <section class="card">
+            <section class="card moves-card sheetable" id="movesCard" data-sheet="moves">
                 <div class="card-head">
                     <h2>Moves</h2>
                     <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
+                    <button class="sheet-close" type="button" aria-label="Close"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3.5 3.5 L12.5 12.5 M12.5 3.5 L3.5 12.5"/></svg></button>
                 </div>
                 <div class="moves" id="moveList"><p class="moves-empty">No moves yet.</p></div>
             </section>
 
-            <section class="card">
+            <section class="card setup-card sheetable" id="setupCard" data-sheet="setup">
                 <div class="card-head">
                     <h2>New drill</h2>
                     <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><use href="#wave"/></svg>
+                    <button class="card-toggle" type="button" aria-expanded="true" aria-controls="setupBody" aria-label="Fold the drill settings"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1 L6 6 L11 1"/></svg></button>
+                    <button class="sheet-close" type="button" aria-label="Close"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3.5 3.5 L12.5 12.5 M12.5 3.5 L3.5 12.5"/></svg></button>
                 </div>
+                <button class="setup-summary" id="setupSummary" type="button" hidden>
+                    <span id="setupSummaryText"></span><span class="change">Change</span>
+                </button>
+                <div class="card-body" id="setupBody">
                 <div class="seg" role="group" aria-label="Mode">
                     <button type="button" data-mode="drill" aria-pressed="true">Drill</button>
                     <button type="button" data-mode="learn" aria-pressed="false">Learn</button>
@@ -155,9 +167,27 @@
                 </div>
 
                 <button class="primary" id="startButton" type="button">Begin drill</button>
+                </div>
             </section>
         </aside>
     </main>
+
+    <!-- Phones: the panels open as bottom sheets from this bar while a drill runs -->
+    <div class="sheet-scrim" id="sheetScrim"></div>
+    <nav class="sheet-bar" id="sheetBar" aria-label="Panels">
+        <button type="button" data-open-sheet="moves">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5 6 H19 M5 12 H19 M5 18 H13"/></svg>
+            Moves
+        </button>
+        <button type="button" data-open-sheet="map" id="mapSheetButton" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="18" r="2"/><path d="M8 6 C13 6, 13 12, 16 12 M8 18 C13 18, 13 12, 16 12"/></svg>
+            Map
+        </button>
+        <button type="button" data-open-sheet="setup">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5 V19 M5 12 H19"/></svg>
+            New drill
+        </button>
+    </nav>
 
     <!-- chess.js library -->
     <script src="js/chess.js"></script>

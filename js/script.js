@@ -323,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderMoves() {
+        renderMoveStrip();
         const list = $('moveList');
         const history = game.history();
         if (!history.length) {
@@ -342,6 +343,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 list.append(cell);
             }
         }
+    }
+
+    // Phones: the game so far on one line under the board, scrolled to the latest move.
+    function renderMoveStrip() {
+        const strip = $('moveStrip');
+        const history = game.history();
+        strip.hidden = !history.length;
+        strip.textContent = '';
+        for (let i = 0; i < history.length; i += 2) {
+            const li = document.createElement('li');
+            const n = document.createElement('span');
+            n.className = 'n';
+            n.textContent = `${i / 2 + 1}.`;
+            li.append(n);
+            for (const j of [i, i + 1]) {
+                if (!history[j]) continue;
+                const move = document.createElement('span');
+                move.textContent = `${history[j]} `;
+                if (j === history.length - 1) move.className = 'cur';
+                li.append(move);
+            }
+            strip.append(li);
+        }
+        strip.scrollLeft = strip.scrollWidth;
     }
 
     // ---------- Board ----------
@@ -385,6 +410,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---------- Learn hints: arrows and marked pieces ----------
 
+    // The Learn arrow, in the set's own language: a whiplash shaft that swells from a
+    // brass bead on the starting square to a spade-shaped head, with one dark outline
+    // around the lot (drawn like the pieces: outline layer underneath, fill on top).
+    function arrowShapes(a, b, size) {
+        const f = n => n.toFixed(1);
+        const len = Math.hypot(b.x - a.x, b.y - a.y);
+        const ux = (b.x - a.x) / len, uy = (b.y - a.y) / len;
+        const px = -uy, py = ux;                                // left-hand normal
+        const tip = { x: b.x - ux * size * 0.1, y: b.y - uy * size * 0.1 };
+        const bow = len * 0.1;                                  // the gentle whiplash curve
+        const ctrl = { x: (a.x + tip.x) / 2 + px * bow, y: (a.y + tip.y) / 2 + py * bow };
+
+        // The head points along the curve's final direction.
+        let dx = tip.x - ctrl.x, dy = tip.y - ctrl.y;
+        const dl = Math.hypot(dx, dy); dx /= dl; dy /= dl;
+        const nx = -dy, ny = dx;
+        const headLen = size * 0.5, headHalf = size * 0.31;
+        const base = { x: tip.x - dx * headLen, y: tip.y - dy * headLen };
+
+        // Shaft: sampled along the curve from the bead to the head, widening as it goes.
+        const quad = t => ({
+            x: (1 - t) ** 2 * a.x + 2 * (1 - t) * t * ctrl.x + t * t * base.x,
+            y: (1 - t) ** 2 * a.y + 2 * (1 - t) * t * ctrl.y + t * t * base.y,
+        });
+        const left = [], right = [];
+        const steps = 18;
+        for (let k = 0; k <= steps; k++) {
+            const t = k / steps;
+            const p = quad(t), q = quad(Math.min(t + 0.01, 1)), o = quad(Math.max(t - 0.01, 0));
+            let tx = q.x - o.x, ty = q.y - o.y;
+            const tl = Math.hypot(tx, ty) || 1; tx /= tl; ty /= tl;
+            const half = size * (0.05 + 0.06 * t);
+            left.push(`${f(p.x - ty * half)} ${f(p.y + tx * half)}`);
+            right.push(`${f(p.x + ty * half)} ${f(p.y - tx * half)}`);
+        }
+        const shaft = `M${left.join(' L')} L${right.reverse().join(' L')} Z`;
+
+        // Head: concave sides sweeping back to curled barbs, like a spade or a leaf.
+        const pt = (along, across) => `${f(base.x + dx * along + nx * across)} ${f(base.y + dy * along + ny * across)}`;
+        const neck = size * 0.1;
+        const head = `M${f(tip.x)} ${f(tip.y)}` +
+            ` Q${pt(headLen * 0.45, headHalf * 0.35)} ${pt(-headLen * 0.12, headHalf)}` +
+            ` Q${pt(headLen * 0.02, headHalf * 0.45)} ${pt(headLen * 0.05, neck)}` +
+            ` L${pt(headLen * 0.05, -neck)}` +
+            ` Q${pt(headLen * 0.02, -headHalf * 0.45)} ${pt(-headLen * 0.12, -headHalf)}` +
+            ` Q${pt(headLen * 0.45, -headHalf * 0.35)} ${f(tip.x)} ${f(tip.y)} Z`;
+
+        return { shaft, head, bead: { x: a.x, y: a.y, r: size * 0.14 } };
+    }
+
     let arrows = [];
     function drawArrows(list) {
         arrows = list;
@@ -397,28 +472,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return r && { x: r.left - origin.left + r.width / 2, y: r.top - origin.top + r.height / 2, size: r.width };
         };
         const ns = 'http://www.w3.org/2000/svg';
-        const svg = document.createElementNS(ns, 'svg');
-        svg.id = 'boardArrows';
-        svg.classList.add('board-arrows');
-        svg.setAttribute('aria-hidden', 'true');
+        const el = (tag, attrs) => {
+            const node = document.createElementNS(ns, tag);
+            for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+            return node;
+        };
+        const svg = el('svg', { id: 'boardArrows', class: 'board-arrows', 'aria-hidden': 'true' });
         for (const { from, to } of list) {
             const a = centre(from), b = centre(to);
-            if (!a || !b) continue;
-            const w = a.size * 0.16;
-            const len = Math.hypot(b.x - a.x, b.y - a.y);
-            if (!len || !a.size) continue;   // board not laid out yet
-            const ux = (b.x - a.x) / len, uy = (b.y - a.y) / len;
-            const head = w * 2.2;
-            const tipX = b.x - ux * a.size * 0.12, tipY = b.y - uy * a.size * 0.12;
-            const baseX = tipX - ux * head, baseY = tipY - uy * head;
-            const line = document.createElementNS(ns, 'line');
-            line.setAttribute('x1', a.x); line.setAttribute('y1', a.y);
-            line.setAttribute('x2', baseX); line.setAttribute('y2', baseY);
-            line.setAttribute('stroke-width', w);
-            const tri = document.createElementNS(ns, 'polygon');
-            const px = -uy * head * 0.75, py = ux * head * 0.75;
-            tri.setAttribute('points', `${tipX},${tipY} ${baseX + px},${baseY + py} ${baseX - px},${baseY - py}`);
-            svg.append(line, tri);
+            if (!a || !b || !a.size || (a.x === b.x && a.y === b.y)) continue;   // board not laid out yet
+            const { shaft, head, bead } = arrowShapes(a, b, a.size);
+            const outline = el('g', { class: 'arrow-outline', 'stroke-width': (a.size * 0.06).toFixed(1) });
+            const fill = el('g', { class: 'arrow-fill' });
+            for (const g of [outline, fill]) {
+                g.append(el('path', { d: shaft }), el('path', { d: head }),
+                    el('circle', { cx: bead.x.toFixed(1), cy: bead.y.toFixed(1), r: bead.r.toFixed(1) }));
+            }
+            // A small highlight on the bead, as on the pieces.
+            fill.append(el('circle', { class: 'arrow-glint', cx: (bead.x - bead.r * 0.3).toFixed(1), cy: (bead.y - bead.r * 0.3).toFixed(1), r: (bead.r * 0.35).toFixed(1) }));
+            svg.append(outline, fill);
         }
         host.append(svg);
     }
@@ -502,6 +574,13 @@ document.addEventListener('DOMContentLoaded', () => {
         selectMode(mode);
         selectSide(side);
         chooseOpening(family || '');
+        closeSheet();
+        document.body.classList.add('has-drill');
+        $('setupSummaryText').textContent =
+            `${mode === 'learn' ? 'Learn' : 'Drill'} · ${side} · ${family ? familyName(family) : 'Any opening'}`;
+        $('setupSummary').hidden = false;
+        setFolded($('setupCard'), true);
+        $('mapSheetButton').hidden = mode !== 'learn';
 
         game.reset();
         clearSelection();
@@ -891,7 +970,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!selectWrap.classList.contains('is-open')) return;
         selectWrap.classList.remove('is-open');
         openingButton.setAttribute('aria-expanded', 'false');
-        document.body.style.overflow = '';
+        document.body.style.overflow = openSheetName ? 'hidden' : '';
         if (returnFocus) openingButton.focus();
     }
 
@@ -924,6 +1003,68 @@ document.addEventListener('DOMContentLoaded', () => {
         closePicker(false);
         startDrill({ mode: selectedMode, side: selectedSide, family: selectedFamily || null });
     });
+
+    // ---------- Panels: folding cards (desktop) and bottom sheets (phones) ----------
+
+    function setFolded(card, folded) {
+        card.classList.toggle('is-collapsed', folded);
+        card.querySelector('.card-toggle')?.setAttribute('aria-expanded', String(!folded));
+    }
+
+    // The map remembers whether you folded it.
+    try { if (localStorage.getItem('fold-map') === '1') setFolded($('mapCard'), true); } catch (e) { /* ignore */ }
+
+    document.querySelectorAll('.card-toggle').forEach(button => button.addEventListener('click', () => {
+        const card = button.closest('.card');
+        const folded = !card.classList.contains('is-collapsed');
+        setFolded(card, folded);
+        if (card.dataset.collapse) {
+            try { localStorage.setItem(`fold-${card.dataset.collapse}`, folded ? '1' : '0'); } catch (e) { /* ignore */ }
+        }
+    }));
+    $('setupSummary').addEventListener('click', () => setFolded($('setupCard'), false));
+
+    let openSheetName = null;
+    let sheetOpener = null;
+    const sheetCard = name => document.querySelector(`.sheetable[data-sheet="${name}"]`);
+
+    function openSheet(name) {
+        closeSheet(false);
+        const card = sheetCard(name);
+        if (!card) return;
+        openSheetName = name;
+        sheetOpener = document.activeElement;
+        card.classList.add('is-sheet-open');
+        card.setAttribute('role', 'dialog');
+        card.setAttribute('aria-modal', 'true');
+        card.scrollTop = 0;
+        $('sheetScrim').classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+        card.querySelector('.sheet-close')?.focus();
+    }
+
+    function closeSheet(returnFocus = true) {
+        if (!openSheetName) return;
+        const card = sheetCard(openSheetName);
+        card.classList.remove('is-sheet-open');
+        card.removeAttribute('role');
+        card.removeAttribute('aria-modal');
+        $('sheetScrim').classList.remove('is-open');
+        document.body.style.overflow = '';
+        openSheetName = null;
+        if (returnFocus) sheetOpener?.focus?.();
+    }
+
+    document.querySelectorAll('[data-open-sheet]').forEach(button =>
+        button.addEventListener('click', () => openSheet(button.dataset.openSheet)));
+    document.querySelectorAll('.sheet-close').forEach(button => button.addEventListener('click', () => closeSheet()));
+    $('sheetScrim').addEventListener('click', () => closeSheet());
+    document.addEventListener('keydown', event => {
+        // The picker handles (and prevents) its own Escape first.
+        if (event.key === 'Escape' && openSheetName && !event.defaultPrevented) closeSheet();
+    });
+    // Sheets only exist on phones; widening the window puts the cards back in the column.
+    matchMedia('(max-width: 760px)').addEventListener('change', event => { if (!event.matches) closeSheet(false); });
 
     // ---------- Day / Night ----------
     // Follows the browser until you choose; the toggle then pins your choice.
