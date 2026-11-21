@@ -1,0 +1,122 @@
+{
+    "ruylopez": {
+        "idea": "Pressure on e5 through the knight that guards it, building towards c3 and d4.",
+        "White": "Castle, Re1, c3 and d4 for a big centre; the b3 bishop and a later Nbd2-f1-g3 aim at the kingside.",
+        "Black": "Hold e5, play ...b5 to gain space, and strike back with ...d5 or ...c5 once developed."
+    },
+    "italiangame": {
+        "idea": "Quick development with the bishop on f7's diagonal, then a fight over d4.",
+        "White": "Either c3 and d4 for a big centre, or a slow d3 build-up with Re1, Nbd2-f1-g3 and a kingside push.",
+        "Black": "Develop fast, keep e5, and break with ...d5 when White's centre is not ready for it."
+    },
+    "kingsgambit": {
+        "idea": "A pawn for the centre and an open f-file aimed at Black's king.",
+        "White": "Play d4 and Bc4, castle, and attack f7 down the f-file; regain the f4 pawn when it's convenient.",
+        "Black": "Either hold the pawn with ...g5, or return it with ...d5 for free development."
+    },
+    "viennagame": {
+        "idea": "Develop the knight first, then decide between f4 attacks and quiet fianchetto play.",
+        "White": "Prepare f4 to open the f-file, or fianchetto with g3 and Bg2 to press on d5.",
+        "Black": "Challenge with ...d5 at the right moment; it frees Black's game in almost every line."
+    },
+    "queensgambit": {
+        "idea": "Use the c-pawn to pull Black's d-pawn from the centre and gain space.",
+        "White": "Pressure d5 with Nc3, Bg5 and Rc1; in the Exchange, push b4–b5 against Black's queenside.",
+        "Black": "Hold d5 solidly, then free the game with ...c5 or ...e5 before White's pressure grows."
+    },
+    "catalan": {
+        "idea": "A Queen's Gambit with the light bishop on g2, pressing the long diagonal.",
+        "White": "Castle, then Qc2, Rd1 and e4; regain c4 if Black took it, and keep the bishop's pressure on b7.",
+        "Black": "Hold d5 or take on c4, then free the c8 bishop with ...b6 or ...c5 without weakening c6."
+    },
+    "london": {
+        "idea": "The same solid setup against almost anything: d4, Bf4, e3, Nf3, c3, Bd3 and Nbd2.",
+        "White": "Build the pyramid, castle, then use Ne5 and a kingside attack, or a well-timed e4 or c4 break.",
+        "Black": "Strike early with ...c5 and ...Qb6 against b2, or swap off the f4 bishop with ...Bd6."
+    },
+    "englishopening": {
+        "idea": "Control the centre from the flank, usually with g3, Bg2 and Nc3.",
+        "White": "Press the long diagonal and d5, expand on the queenside with Rb1 and b4, and keep e4 in reserve.",
+        "Black": "Take central space with ...e5 or ...d5, and avoid letting the g2 bishop dominate."
+    },
+    "sicilian": {
+        "idea": "An unbalanced fight: Black trades the c-pawn for White's d-pawn and plays on the c-file.",
+        "White": "Use the lead in development: f3, Be3, Qd2 and O-O-O with a pawn storm, or Bc4 aimed at f7.",
+        "Black": "Counterattack on the queenside with ...a6, ...b5 and rooks on c8, and look for ...d5 to free the game."
+    },
+    "french": {
+        "idea": "A solid e6–d5 chain: Black accepts less space and hits back at White's centre.",
+        "White": "Gain space with e5 and attack the kingside; keep d4 well defended.",
+        "Black": "Undermine d4 with ...c5 and ...Qb6, then ...f6 against e5; find a role for the c8 bishop."
+    },
+    "carokann": {
+        "idea": "A rock-solid c6–d5 structure with the light bishop developed outside it.",
+        "White": "Use extra space: e5 and kingside play in the Advance, or h4–h5 against the f5 bishop.",
+        "Black": "Get the bishop out, then ...e6, ...c5 and queenside play; aim for a healthy endgame."
+    },
+    "pirc": {
+        "idea": "Hypermodern: allow White's centre, then attack it with pieces and pawn breaks.",
+        "White": "Use the space: f4 and e5, or Be3, Qd2, Bh6 and a kingside attack.",
+        "Black": "Fianchetto, castle, then break with ...e5 or ...c5 before White's attack lands."
+    },
+    "modern": {
+        "idea": "Maximum flexibility: Black waits to see White's setup before choosing a pawn break.",
+        "White": "Build a broad centre and use the space, but don't over-extend.",
+        "Black": "Fianchetto, then hit the centre with ...c5, ...e5 or ...d5, or expand with ...a6 and ...b5."
+    },
+    "alekhine": {
+        "idea": "Provocation: Black lets White's pawns chase the knight, then attacks them.",
+        "White": "Keep the centre supported and use the space; don't push pawns that can't be defended.",
+        "Black": "Undermine e5 and d4 with ...d6, ...c5 and piece pressure, then exploit the weaknesses left behind."
+    },
+    "scandinavian": {
+        "idea": "Clear the centre early and develop smoothly, even at the cost of a tempo.",
+        "White": "Gain time on the queen, develop with d4, Nf3 and Bc4, and use the extra space.",
+        "Black": "Develop the c8 bishop before ...e6, play ...c6 for a solid shell, and avoid queen traps."
+    },
+    "petrov": {
+        "idea": "Symmetry and solidity: Black mirrors White to reach a safe, balanced position.",
+        "White": "Use the small lead in development: d4, Bd3, castle, and Re1 against the e4 knight.",
+        "Black": "Regain the pawn safely, keep the e4 knight supported with ...d5, and develop symmetrically."
+    },
+    "philidor": {
+        "idea": "A compact, solid shell around e5, giving White space but few targets.",
+        "White": "Use the space: develop quickly, castle, and look for breaks against e5 or f7.",
+        "Black": "Hold e5 with ...Nbd7, ...Be7 and ...c6, then expand with ...b5 or break with ...exd4."
+    },
+    "kingsindian": {
+        "idea": "Let White build a big centre, then hit it with ...e5 and attack on the kingside.",
+        "White": "Keep the centre, close it with d5 when it suits, and attack on the queenside with c5.",
+        "Black": "Play ...e5, then often ...Nh5 and ...f5 for a kingside attack once the centre is locked."
+    },
+    "nimzoindian": {
+        "idea": "Fight for e4 with pieces, ready to trade the bishop for doubled pawns on c3.",
+        "White": "Win the bishop pair, keep the centre, and open the position for the bishops.",
+        "Black": "Control e4, target doubled c-pawns, and keep the position closed so knights shine."
+    },
+    "queensindian": {
+        "idea": "Control e4 from b7, keeping a solid position with no weaknesses.",
+        "White": "Fight for e4 with Nc3 and Qc2, and use the extra queenside space.",
+        "Black": "Hold e4 with the b7 bishop and knight, then free the game with ...c5 or ...d5."
+    },
+    "grunfeld": {
+        "idea": "Let White take the centre with pawns, then attack it with pieces and ...c5.",
+        "White": "Build the e4–d4 centre, support it, and push d5 when it gains space.",
+        "Black": "Hit d4 with the g7 bishop, ...c5 and ...Nc6, and exploit any loosening of White's centre."
+    },
+    "slav": {
+        "idea": "Hold d5 with ...c6 so the c8 bishop can still develop outside the pawn chain.",
+        "White": "Pressure d5, regain c4 if Black takes it, and use the space for e4.",
+        "Black": "Develop the bishop to f5 or g4, then ...e6; break with ...c5 or ...e5 when ready."
+    },
+    "benoni": {
+        "idea": "Unbalance the game: White gets central space, Black gets queenside and dark-square play.",
+        "White": "Use the central majority to push e4–e5, and keep Black's queenside play in check.",
+        "Black": "Use the queenside majority and open files with ...b5, and the long diagonal with ...Bg7."
+    },
+    "dutch": {
+        "idea": "Control e4 with the f-pawn and play for a kingside attack.",
+        "White": "Fianchetto, fight for e4 with Nc3 and Qc2, and exploit the loosened e6 and e5 squares.",
+        "Black": "Hold e4, then attack with ...Qe8–h5 or ...g5, or the Stonewall's ...Ne4 and ...Qe7."
+    }
+}

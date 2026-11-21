@@ -1,0 +1,570 @@
+"""Learn mode's idea notes and plan cards.
+
+NOTES: for each family, the moves that reach a position (any line through it) and a
+note on the move just played. Each note says *why*: the purpose of the move and what
+it leads to or what to watch for. Keep them under about 24 words so two notes still
+fit on a phone screen.
+
+PLANS: one card per family, shown at the start of a Learn run: the idea of the
+opening and each side's plan.
+
+Usage (from the repository root):  python3 tools/build_notes.py
+Checks every move sequence is legal and occurs in that family's lines, then writes
+data/notes.json and data/plans.json. Needs python-chess.
+"""
+import json
+import sys
+from pathlib import Path
+
+import chess
+
+ROOT = Path(__file__).resolve().parent.parent
+MAX_WORDS = 24
+
+# ---------------------------------------------------------------- shared openings
+
+E4 = "Grabs the centre and opens lines for the queen and bishop, so White can develop fast and castle early."
+D4 = "Takes the centre with a pawn the queen already guards, so Black can't challenge it at once with ...e5."
+E5 = "Matches White in the centre and frees the f8 bishop, so e4 doesn't control the middle on its own."
+NF3 = "Develops with a threat to e5, so Black spends the next move defending instead of choosing freely."
+NC6 = "Guards e5 with a piece rather than ...d6, so the f8 bishop's diagonal stays open and no time is lost."
+NF6_D4 = "Develops and stops e4, so White can't build a broad e4–d4 centre without preparing it first."
+C4_D4 = "Gains queenside space and hits d5, so a later ...d5 can be met by exchanging on d5."
+D5_D4 = "Matches White in the centre and stops e4, so White needs c4 to fight for the centre."
+C4_QG = "Offers the c-pawn to lure Black's d-pawn from the centre; if ...dxc4, White regains it later with e3 and Bxc4."
+OPEN_E = {"e4": E4, "e4 e5": E5, "e4 e5 Nf3": NF3, "e4 e5 Nf3 Nc6": NC6}
+QG = {"d4": D4, "d4 d5": D5_D4, "d4 d5 c4": C4_QG}
+INDIAN = {"d4": D4, "d4 Nf6": NF6_D4, "d4 Nf6 c4": C4_D4}
+
+NOTES = {}
+PLANS = {}
+
+# ---------------------------------------------------------------- White's openings
+
+NOTES["ruylopez"] = {**OPEN_E,
+    "e4 e5 Nf3 Nc6 Bb5": "Hits the knight that defends e5. Not a threat yet, but once White castles and plays d4, e5 comes under real pressure.",
+    "e4 e5 Nf3 Nc6 Bb5 a6": "Questions the bishop at once: retreating keeps the tension, while Bxc6 hands Black the bishop pair.",
+    "e4 e5 Nf3 Nc6 Bb5 a6 Ba4": "Keeps the bishop and the pressure on c6; Black can break the pin with ...b5 whenever needed.",
+    "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6": "Develops and hits e4, so White must decide straight away whether to defend it or castle and let it go.",
+    "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O": "Castles instead of defending e4: if Black takes it, Re1 and d4 win it back with the e-file opened.",
+    "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 d6": "Modern Steinitz: holds e5 with a pawn; with ...a6 in, ...b5 can break the pin whenever it bites.",
+    "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 b5": "Gains queenside space and sends the bishop to b3 early; White can probe the loosened queenside with a4.",
+    "e4 e5 Nf3 Nc6 Bb5 a6 Bxc6": "Exchange Variation: damages Black's pawns for an endgame where White's healthy kingside majority can make a passed pawn.",
+    "e4 e5 Nf3 Nc6 Bb5 a6 Bxc6 dxc6": "Recaptures towards the centre to open lines for the queen and bishop; the bishop pair offsets the doubled pawns.",
+    "e4 e5 Nf3 Nc6 Bb5 Nf6": "Berlin Defense: hits e4 at once instead of spending a move on ...a6, forcing White to commit.",
+    "e4 e5 Nf3 Nc6 Bb5 Nf6 O-O": "Castles and lets e4 go: Re1 wins it back while Black's king is still in the centre.",
+    "e4 e5 Nf3 Nc6 Bb5 Nf6 O-O Nxe4": "Takes the pawn, heading for the Berlin endgame: queens come off early and Black relies on the bishop pair.",
+    "e4 e5 Nf3 Nc6 Bb5 Nf6 d3": "Protects e4 quietly to avoid the Berlin endgame, keeping pieces on for a slow c3 and Nbd2 middlegame.",
+    "e4 e5 Nf3 Nc6 Bb5 Bc5": "Classical Defense: puts the bishop on its best diagonal, towards f2, before c3 and d4 can blunt it.",
+    "e4 e5 Nf3 Nc6 Bb5 d6": "Steinitz Defense: holds e5 with a pawn; solid, but it blocks the f8 bishop and leaves White freer.",
+    "e4 e5 Nf3 Nc6 Bb5 f5": "Schliemann: counterattacks e4 at once to open the f-file before White has finished developing.",
+    "e4 e5 Nf3 Nc6 Bb5 Nd4": "Bird's Defense: trades off White's knight to ease the pressure on e5, leaving a pawn on d4 that can become a target.",
+}
+PLANS["ruylopez"] = {
+    "idea": "Pressure on e5 through the knight that guards it, building towards c3 and d4.",
+    "White": "Castle, Re1, c3 and d4 for a big centre; the b3 bishop and a later Nbd2-f1-g3 aim at the kingside.",
+    "Black": "Hold e5, play ...b5 to gain space, and strike back with ...d5 or ...c5 once developed.",
+}
+
+NOTES["italiangame"] = {**OPEN_E,
+    "e4 e5 Nf3 Nc6 Bc4": "Aims at f7, defended only by Black's king, so tactics on f7 shape Black's next few moves.",
+    "e4 e5 Nf3 Nc6 Bc4 Bc5": "Giuoco Piano: mirrors White, aiming at f2 and taking the bishop's best square before c3 and d4.",
+    "e4 e5 Nf3 Nc6 Bc4 Bc5 c3": "Prepares d4 to build a big centre, which would also gain time by attacking the c5 bishop.",
+    "e4 e5 Nf3 Nc6 Bc4 Bc5 c3 Nf6": "Counterattacks e4 before d4 lands, so if White pushes d4 anyway the centre opens with Black well placed.",
+    "e4 e5 Nf3 Nc6 Bc4 Bc5 d3": "Giuoco Pianissimo: keeps the centre closed for a slow build-up with c3, Re1 and Nbd2-f1-g3.",
+    "e4 e5 Nf3 Nc6 Bc4 Bc5 b4": "Evans Gambit: deflects the bishop with a pawn so c3 and d4 come with tempo.",
+    "e4 e5 Nf3 Nc6 Bc4 Bc5 O-O": "Castles first and keeps c3 and d4 in reserve, choosing the plan after seeing Black's setup.",
+    "e4 e5 Nf3 Nc6 Bc4 Nf6": "Two Knights: counterattacks e4 rather than copying, accepting that Ng5 can hit f7.",
+    "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5": "Attacks f7 twice. Provocative: the knight has moved twice, so Black gains time if the attack fizzles.",
+    "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5": "Blocks the bishop's diagonal to f7; after exd5 Black usually gives a pawn for fast development.",
+    "e4 e5 Nf3 Nc6 Bc4 Nf6 d3": "Defends e4 calmly, avoiding the sharp Ng5 and d4 lines for a slow manoeuvring game.",
+    "e4 e5 Nf3 Nc6 Bc4 Nf6 d4": "Opens the centre at once, so White can attack while Black's king is still uncastled.",
+    "e4 e5 Nf3 Nc6 Bc4 Be7": "Hungarian Defense: a modest bishop that avoids every sharp line, at the cost of a passive position.",
+}
+PLANS["italiangame"] = {
+    "idea": "Quick development with the bishop on f7's diagonal, then a fight over d4.",
+    "White": "Either c3 and d4 for a big centre, or a slow d3 build-up with Re1, Nbd2-f1-g3 and a kingside push.",
+    "Black": "Develop fast, keep e5, and break with ...d5 when White's centre is not ready for it.",
+}
+
+NOTES["kingsgambit"] = {"e4": E4, "e4 e5": E5,
+    "e4 e5 f4": "Offers the f-pawn to deflect e5, so White can take the centre with d4 and attack down the f-file.",
+    "e4 e5 f4 exf4": "Accepts the gambit, usually planning ...g5 to keep the extra pawn and block White's kingside play.",
+    "e4 e5 f4 exf4 Nf3": "Stops ...Qh4+ and supports d4, so White's king stays safe while the centre is built.",
+    "e4 e5 f4 exf4 Nf3 g5": "Defends f4 with another pawn to keep the material, loosening Black's kingside in return.",
+    "e4 e5 f4 exf4 Nf3 g5 h4": "Undermines g5 before ...h6 or ...Bg7 can support it, breaking up Black's pawn chain.",
+    "e4 e5 f4 exf4 Nf3 g5 Bc4": "Develops at f7, inviting sharp lines after ...g4 where White gives material for the attack.",
+    "e4 e5 f4 exf4 Nf3 d5": "Gives the pawn back to strike the centre, so Black develops freely rather than clinging to f4.",
+    "e4 e5 f4 exf4 Nf3 d6": "Fischer Defense: covers e5 and g5 first, so ...g5 can follow without knight tricks.",
+    "e4 e5 f4 exf4 Bc4": "Bishop's Gambit: allows ...Qh4+, because the king is safe enough on f1 and the queen gets chased.",
+    "e4 e5 f4 d5": "Falkbeer Counter-Gambit: strikes the centre instead of taking, punishing the loosened kingside.",
+    "e4 e5 f4 Bc5": "Declines: the bishop eyes g1, so White can't castle easily and fxe5 runs into ...Qh4+.",
+}
+PLANS["kingsgambit"] = {
+    "idea": "A pawn for the centre and an open f-file aimed at Black's king.",
+    "White": "Play d4 and Bc4, castle, and attack f7 down the f-file; regain the f4 pawn when it's convenient.",
+    "Black": "Either hold the pawn with ...g5, or return it with ...d5 for free development.",
+}
+
+NOTES["viennagame"] = {"e4": E4, "e4 e5": E5,
+    "e4 e5 Nc3": "Develops and guards e4, keeping the f4 break in reserve as a delayed King's Gambit.",
+    "e4 e5 Nc3 Nf6": "Develops with pressure on e4, so White's f4 ideas come with less force.",
+    "e4 e5 Nc3 Nf6 f4": "Vienna Gambit: strikes at e5, aiming to push e5 and drive the knight from the centre.",
+    "e4 e5 Nc3 Nf6 f4 d5": "Hits back in the centre, opening the position before White's pawns can roll forward.",
+    "e4 e5 Nc3 Nf6 Bc4": "Aims at f7 while the c3 knight guards e4, ready for sharp play.",
+    "e4 e5 Nc3 Nf6 Bc4 Nxe4": "A fork trick: takes e4, counting on ...d5 to win the piece back. After Qh5 it gets very sharp.",
+    "e4 e5 Nc3 Nf6 g3": "Mieses: a quiet fianchetto, so the bishop controls the long diagonal and d5.",
+    "e4 e5 Nc3 Nc6": "Develops and keeps e5 solid, so f4 meets a well-supported centre.",
+    "e4 e5 Nc3 Nc6 g3": "Fianchettoes for long-term pressure on d5, aiming for slow positional play.",
+    "e4 e5 Nc3 Bc5": "Takes the diagonal towards f2, making the f4 break riskier for White.",
+}
+PLANS["viennagame"] = {
+    "idea": "Develop the knight first, then decide between f4 attacks and quiet fianchetto play.",
+    "White": "Prepare f4 to open the f-file, or fianchetto with g3 and Bg2 to press on d5.",
+    "Black": "Challenge with ...d5 at the right moment; it frees Black's game in almost every line.",
+}
+
+NOTES["queensgambit"] = {**QG,
+    "d4 d5 c4 e6": "Queen's Gambit Declined: holds d5 with a pawn, at the cost of shutting in the c8 bishop for now.",
+    "d4 d5 c4 e6 Nc3": "Adds pressure on d5, so Black must keep defending it.",
+    "d4 d5 c4 e6 Nc3 Nf6": "Guards d5 again while developing, keeping the centre secure.",
+    "d4 d5 c4 e6 Nc3 Nf6 Bg5": "Pins the knight that defends d5, so the pressure builds and Black's development gets awkward.",
+    "d4 d5 c4 e6 Nc3 Nf6 Bg5 Be7": "Breaks the pin calmly to castle; Black frees the game later with ...c5 or ...e5.",
+    "d4 d5 c4 e6 Nc3 Nf6 cxd5": "Exchange Variation: fixes the pawns so White can play b4–b5 against Black's queenside.",
+    "d4 d5 c4 e6 Nc3 Nf6 Nf3": "Natural development that keeps every option, choosing Bg5 or Bf4 later.",
+    "d4 d5 c4 e6 Nc3 c5": "Tarrasch: accepts an isolated d-pawn for free piece play and open lines.",
+    "d4 d5 c4 dxc4": "Queen's Gambit Accepted: takes, not to keep the pawn but to gain time for ...c5 or ...e5.",
+    "d4 d5 c4 dxc4 e4": "Builds a full centre while the pawn is away, regaining it later with Bxc4.",
+    "d4 d5 c4 dxc4 Nf3": "Develops and stops ...e5, so Black can't free the game before White wins the pawn back.",
+    "d4 d5 c4 e5": "Albin Counter-Gambit: gives a pawn for a cramping pawn on d4 and quick piece play.",
+    "d4 d5 c4 Nc6": "Chigorin: pieces over pawns; the knight hits d4 at once, often with ...Bg4 next.",
+    "d4 d5 c4 Bf5": "Baltic Defense: gets the light bishop out before ...e6, though Qb3 can then hit b7.",
+}
+PLANS["queensgambit"] = {
+    "idea": "Use the c-pawn to pull Black's d-pawn from the centre and gain space.",
+    "White": "Pressure d5 with Nc3, Bg5 and Rc1; in the Exchange, push b4–b5 against Black's queenside.",
+    "Black": "Hold d5 solidly, then free the game with ...c5 or ...e5 before White's pressure grows.",
+}
+
+NOTES["catalan"] = {**INDIAN,
+    "d4 Nf6 c4 e6": "Prepares ...d5 or ...Bb4 and opens the f8 bishop, keeping Black's setup flexible.",
+    "d4 Nf6 c4 e6 g3": "The Catalan: the bishop goes to g2 to press the long diagonal towards d5 and b7.",
+    "d4 Nf6 c4 e6 g3 d5": "Stakes the centre, entering the classic Catalan where the g2 bishop bears down on d5.",
+    "d4 Nf6 c4 e6 g3 d5 Bg2": "Aims through d5 at b7: whenever Black takes on c4 or moves the c-pawn, it grows stronger.",
+    "d4 Nf6 c4 e6 g3 d5 Bg2 dxc4": "Open Catalan: takes the pawn; White plays for lasting pressure on the long diagonal to win it back.",
+    "d4 Nf6 c4 e6 g3 d5 Bg2 Be7": "Closed Catalan: holds d5 solidly, freeing the game later with ...c5 or ...b6 and ...Bb7.",
+    "d4 Nf6 c4 e6 g3 d5 Bg2 c6": "Reinforces d5 so the long diagonal stays blocked, at the cost of a slightly passive setup.",
+    "d4 Nf6 c4 e6 g3 Bb4+": "Checks to swap the dark-squared bishops before White's queenside pressure builds.",
+    "d4 Nf6 c4 e6 g3 c5": "Strikes at d4 to open the position, choosing activity over solidity.",
+    "d4 Nf6 c4 e6 Nf3": "Avoids the Nimzo-Indian pin and keeps g3 in reserve.",
+}
+PLANS["catalan"] = {
+    "idea": "A Queen's Gambit with the light bishop on g2, pressing the long diagonal.",
+    "White": "Castle, then Qc2, Rd1 and e4; regain c4 if Black took it, and keep the bishop's pressure on b7.",
+    "Black": "Hold d5 or take on c4, then free the c8 bishop with ...b6 or ...c5 without weakening c6.",
+}
+
+NOTES["london"] = {"d4": D4, "d4 Nf6": NF6_D4, "d4 d5": D5_D4,
+    "d4 Nf6 Bf4": "The London: develops the dark-squared bishop before e3, so it isn't shut in behind the pawns.",
+    "d4 d5 Bf4": "The London: develops the dark-squared bishop before e3, so it isn't shut in behind the pawns.",
+    "d4 Nf6 Bf4 c5": "Hits d4 at once; with the c1 bishop gone, ...Qb6 can target b2.",
+    "d4 Nf6 Bf4 c5 e3": "Holds d4 and opens the f1 bishop, keeping the pyramid solid even if b2 comes under fire.",
+    "d4 Nf6 Bf4 c5 e3 Qb6": "Attacks b2, which the bishop no longer defends, so White must spend a move on it.",
+    "d4 Nf6 Bf4 e6": "Solid: prepares ...d5 or ...b6 and ...Bb7, keeping options open.",
+    "d4 Nf6 Bf4 g6": "A King's Indian setup: the g7 bishop will fight White's bishop and the d4 pawn.",
+    "d4 d5 Bf4 Nf6": "Develops and guards d5, waiting to see White's setup before using the c-pawn.",
+    "d4 d5 Bf4 Nf6 e3": "Builds the d4–e3 pyramid behind the bishop, solid against any central break.",
+    "d4 d5 Bf4 Bf5": "Mirrors White, getting the light bishop out before ...e6; c4 and Qb3 can then probe b7.",
+    "d4 d5 Bf4 c5": "The sharpest reply: pressure on d4 and, after ...Qb6, on b2.",
+    "d4 Nf6 Nf3": "A flexible start; Bf4 can follow while some sharper replies are avoided.",
+}
+PLANS["london"] = {
+    "idea": "The same solid setup against almost anything: d4, Bf4, e3, Nf3, c3, Bd3 and Nbd2.",
+    "White": "Build the pyramid, castle, then use Ne5 and a kingside attack, or a well-timed e4 or c4 break.",
+    "Black": "Strike early with ...c5 and ...Qb6 against b2, or swap off the f4 bishop with ...Bd6.",
+}
+
+NOTES["englishopening"] = {
+    "c4": "Controls d5 from the flank, keeping the centre fluid and leaving room for g3 and Bg2.",
+    "c4 e5": "A reversed Sicilian: Black takes the centre, and White plays the Sicilian a move up.",
+    "c4 e5 Nc3": "Adds control of d5, so Black's freeing ...d5 is harder to achieve.",
+    "c4 e5 Nc3 Nf6": "Develops and prepares ...d5, aiming to free Black's game in the centre.",
+    "c4 e5 Nc3 Nc6": "Symmetrical development, keeping e5 well supported.",
+    "c4 e5 Nc3 Nc6 g3": "Fianchetto: the g2 bishop rakes the long diagonal, pressing d5 and b7.",
+    "c4 c5": "Symmetrical English: Black copies, fighting for d4 so White can't take the centre.",
+    "c4 Nf6": "Flexible, delaying Black's choice of setup until White commits.",
+    "c4 Nf6 Nc3": "Develops towards d5 and e4, preparing e4 in some lines.",
+    "c4 Nf6 Nc3 e6": "Prepares ...d5; if White plays e4, e5 kicks the knight and the game turns sharp.",
+    "c4 Nf6 Nc3 d5": "Challenges d5 at once; after cxd5 Nxd5 it's a Grünfeld with colours reversed.",
+    "c4 c6": "Prepares ...d5 Caro-Kann style, so Black can recapture on d5 with a pawn.",
+    "c4 e6": "Prepares ...d5 with a solid Queen's Gambit structure.",
+    "c4 f5": "A Dutch setup: Black fights for e4 from the flank.",
+}
+PLANS["englishopening"] = {
+    "idea": "Control the centre from the flank, usually with g3, Bg2 and Nc3.",
+    "White": "Press the long diagonal and d5, expand on the queenside with Rb1 and b4, and keep e4 in reserve.",
+    "Black": "Take central space with ...e5 or ...d5, and avoid letting the g2 bishop dominate.",
+}
+
+# ---------------------------------------------------------------- Black's defences
+
+NOTES["sicilian"] = {"e4": E4,
+    "e4 c5": "The Sicilian: fights for d4 from the side and unbalances the game, so both sides play to win.",
+    "e4 c5 Nf3": "Prepares d4 to open the centre while White is ahead in development.",
+    "e4 c5 Nf3 d6": "Controls e5 and prepares ...Nf6, keeping the Najdorf and Dragon available.",
+    "e4 c5 Nf3 Nc6": "Develops and adds pressure to d4, so d4 will be met by a quick exchange.",
+    "e4 c5 Nf3 e6": "Flexible: prepares ...d5 and keeps the f8 bishop's options open.",
+    "e4 c5 Nf3 d6 d4": "Open Sicilian: opens the centre to use White's lead in development.",
+    "e4 c5 Nf3 d6 d4 cxd4": "Trades a wing pawn for a centre pawn, gaining the half-open c-file and a central majority.",
+    "e4 c5 Nf3 d6 d4 cxd4 Nxd4": "Centralises the knight with a lead in development; Black must now develop with tempo.",
+    "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6": "Hits e4, so White must play Nc3 and can't set up the c4 bind.",
+    "e4 c5 Nf3 d6 Bb5+": "Moscow Variation: develops with check and trades pieces, sidestepping the main Open Sicilian.",
+    "e4 c5 Nf3 Nc6 Bb5": "Rossolimo: pressures c6, planning Bxc6 to damage Black's pawns and avoid the Open Sicilian.",
+    "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 e5": "Kicks the knight from d4 with tempo, accepting a weak d5 square for active pieces.",
+    "e4 c5 c3": "Alapin: prepares d4 so White can recapture with a pawn and keep a full centre.",
+    "e4 c5 c3 Nf6": "Hits e4 at once; after e5 Nd5 the knight is well placed and White's centre becomes a target.",
+    "e4 c5 c3 d5": "Opens the centre at once; the queen can recapture on d5 because c3 has ruled out Nc3.",
+    "e4 c5 Nc3": "Closed Sicilian: slow play with g3, Bg2 and often f4, aiming for a kingside attack.",
+    "e4 c5 d4 cxd4 c3": "Smith-Morra Gambit: gives a pawn for fast development and open c- and d-files.",
+}
+PLANS["sicilian"] = {
+    "idea": "An unbalanced fight: Black trades the c-pawn for White's d-pawn and plays on the c-file.",
+    "White": "Use the lead in development: f3, Be3, Qd2 and O-O-O with a pawn storm, or Bc4 aimed at f7.",
+    "Black": "Counterattack on the queenside with ...a6, ...b5 and rooks on c8, and look for ...d5 to free the game.",
+}
+
+NOTES["french"] = {"e4": E4,
+    "e4 e6": "The French: prepares ...d5 with a pawn ready to recapture, at the cost of shutting in the c8 bishop.",
+    "e4 e6 d4": "Takes the full centre; the French allows it, planning to strike at it with ...d5 and ...c5.",
+    "e4 e6 d4 d5": "Challenges e4 at once, so White must decide how to handle the tension.",
+    "e4 e6 d4 d5 Nc3": "Defends e4 with a piece, keeping the tension while developing.",
+    "e4 e6 d4 d5 Nc3 Bb4": "Winawer: pins the knight that defends e4, so the pressure on e4 becomes real.",
+    "e4 e6 d4 d5 Nc3 Nf6": "Classical: attacks e4 again with a developing move.",
+    "e4 e6 d4 d5 Nc3 Nf6 Bg5": "Pins the knight that attacks e4, easing the pressure on White's centre.",
+    "e4 e6 d4 d5 Nc3 Nf6 e5": "Steinitz: gains space and kicks the knight, creating the locked French centre.",
+    "e4 e6 d4 d5 Nc3 dxe4": "Rubinstein: releases the tension for easy development; solid, if a little passive.",
+    "e4 e6 d4 d5 e5": "Advance: locks the centre and gains space; the fight becomes about attacking each pawn chain.",
+    "e4 e6 d4 d5 e5 c5": "Hits the base of White's chain at d4, the key French plan; ...Nc6 and ...Qb6 add pressure.",
+    "e4 e6 d4 d5 Nd2": "Tarrasch: defends e4 while keeping c3 free for a pawn and avoiding the Winawer pin.",
+    "e4 e6 d4 d5 Nd2 c5": "Strikes at d4 at once, often accepting an isolated pawn for active pieces.",
+    "e4 e6 d4 d5 exd5": "Exchange: opens the position symmetrically, which frees Black's c8 bishop.",
+    "e4 e6 d3": "A King's Indian Attack setup, sidestepping the main French lines for a slower game.",
+}
+PLANS["french"] = {
+    "idea": "A solid e6–d5 chain: Black accepts less space and hits back at White's centre.",
+    "White": "Gain space with e5 and attack the kingside; keep d4 well defended.",
+    "Black": "Undermine d4 with ...c5 and ...Qb6, then ...f6 against e5; find a role for the c8 bishop.",
+}
+
+NOTES["carokann"] = {"e4": E4,
+    "e4 c6": "The Caro-Kann: prepares ...d5 without blocking the c8 bishop, so it can develop before ...e6.",
+    "e4 c6 d4": "Takes the full centre; Black will challenge it at once with ...d5.",
+    "e4 c6 d4 d5": "Strikes at e4, ready to recapture with the c-pawn to keep a pawn on d5.",
+    "e4 c6 d4 d5 e5": "Advance: gains space and locks the centre.",
+    "e4 c6 d4 d5 e5 Bf5": "Develops the bishop outside the pawn chain before ...e6: the whole point of the Caro-Kann.",
+    "e4 c6 d4 d5 e5 c5": "Hits d4 at once, spending a second move on the c-pawn for an open game.",
+    "e4 c6 d4 d5 Nc3": "Defends e4 with a developing move, keeping the tension.",
+    "e4 c6 d4 d5 Nc3 dxe4": "Releases the tension, giving up the centre for easy development.",
+    "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Bf5": "Classical: develops with tempo on the knight; White often answers Ng3 and h4.",
+    "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Nd7": "Karpov: prepares ...Ngf6 so a trade on f6 is met by a knight, avoiding doubled pawns.",
+    "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Nf6": "Offers a trade; after Nxf6 Black picks ...exf6 or ...gxf6 for an active, unbalanced game.",
+    "e4 c6 d4 d5 exd5": "Exchange: White aims for Bd3, c3 and a quick kingside build-up.",
+    "e4 c6 d4 d5 exd5 cxd5": "Recaptures towards the centre, keeping a pawn on d5.",
+    "e4 c6 d4 d5 exd5 cxd5 c4": "Panov Attack: hits d5, heading for isolated-pawn positions where White attacks.",
+    "e4 c6 d4 d5 f3": "Fantasy Variation: backs e4 with a pawn to keep the centre, at some cost to the king's safety.",
+    "e4 c6 Nc3 d5 Nf3": "Two Knights: quick development, keeping the centre flexible.",
+    "e4 c6 Nc3 d5 Nf3 Bg4": "Pins the knight; Black often gives up the bishop for it to keep a solid centre.",
+}
+PLANS["carokann"] = {
+    "idea": "A rock-solid c6–d5 structure with the light bishop developed outside it.",
+    "White": "Use extra space: e5 and kingside play in the Advance, or h4–h5 against the f5 bishop.",
+    "Black": "Get the bishop out, then ...e6, ...c5 and queenside play; aim for a healthy endgame.",
+}
+
+NOTES["pirc"] = {"e4": E4,
+    "e4 d6": "The Pirc: lets White build a centre, planning to undermine it later with ...e5 or ...c5.",
+    "e4 d6 d4": "Accepts the invitation to build a broad centre, which Black will try to undermine.",
+    "e4 d6 d4 Nf6": "Develops with pressure on e4, so White must defend it.",
+    "e4 d6 d4 Nf6 Nc3": "Defends e4 with a developing move, keeping f4 and Be3 plans open.",
+    "e4 d6 d4 Nf6 Nc3 g6": "Prepares the fianchetto: the g7 bishop will aim at White's centre.",
+    "e4 d6 d4 Nf6 Nc3 g6 f4": "Austrian Attack: a big pawn centre aiming for e5, the most aggressive try.",
+    "e4 d6 d4 Nf6 Nc3 g6 Be3": "Prepares Qd2 and Bh6 to swap Black's key bishop, often with a kingside pawn storm.",
+    "e4 d6 d4 Nf6 Nc3 g6 Be3 Ng4": "Hits the bishop before Qd2 and Bh6 can follow, winning time or the bishop pair.",
+    "e4 d6 d4 Nf6 Nc3 g6 Nf3": "Classical: quiet development with Be2 and castling.",
+    "e4 d6 d4 Nf6 Nc3 g6 Bg5": "Byrne Variation: harasses the knight and prepares Qd2, keeping Bh6 ideas.",
+}
+PLANS["pirc"] = {
+    "idea": "Hypermodern: allow White's centre, then attack it with pieces and pawn breaks.",
+    "White": "Use the space: f4 and e5, or Be3, Qd2, Bh6 and a kingside attack.",
+    "Black": "Fianchetto, castle, then break with ...e5 or ...c5 before White's attack lands.",
+}
+
+NOTES["modern"] = {"e4": E4,
+    "e4 g6": "The Modern: fianchetto first, keeping the knight flexible and inviting White to over-extend.",
+    "e4 g6 d4": "Takes the full centre, which the Modern invites so it can be attacked later.",
+    "e4 g6 d4 Bg7": "The bishop presses d4 down the long diagonal.",
+    "e4 g6 d4 Bg7 Nc3": "Defends e4 with a developing move, keeping f4 or Be3 plans open.",
+    "e4 g6 d4 Bg7 Nc3 d6": "Prepares ...e5 or ...c5 later, keeping a solid shell around the king.",
+    "e4 g6 d4 Bg7 Nc3 c6": "Prepares ...d5 to challenge the centre directly.",
+    "e4 g6 d4 Bg7 c4": "Grabs more space for a bind that limits Black's counterplay.",
+    "e4 g6 d4 Bg7 Nf3": "Calm development: White keeps a solid centre rather than over-extending.",
+    "e4 g6 d4 Bg7 f4": "A big pawn centre, threatening e5 to cramp Black.",
+    "e4 g6 d4 d6": "Delays ...Bg7 to keep queenside options like ...a6 and ...b5.",
+}
+PLANS["modern"] = {
+    "idea": "Maximum flexibility: Black waits to see White's setup before choosing a pawn break.",
+    "White": "Build a broad centre and use the space, but don't over-extend.",
+    "Black": "Fianchetto, then hit the centre with ...c5, ...e5 or ...d5, or expand with ...a6 and ...b5.",
+}
+
+NOTES["alekhine"] = {"e4": E4,
+    "e4 Nf6": "Alekhine's Defense: invites the e-pawn forward so it can be attacked later as an over-extended target.",
+    "e4 Nf6 e5": "Gains time on the knight and space in the centre.",
+    "e4 Nf6 e5 Nd5": "Centralises the knight, inviting more pawn advances.",
+    "e4 Nf6 e5 Nd5 d4": "Builds the centre further, supporting e5.",
+    "e4 Nf6 e5 Nd5 d4 d6": "Hits e5 straight away, before White can support it.",
+    "e4 Nf6 e5 Nd5 d4 d6 Nf3": "Modern Variation: supports e5 with a piece rather than more pawns.",
+    "e4 Nf6 e5 Nd5 d4 d6 Nf3 Bg4": "Pins the knight that defends e5, increasing the pressure on White's centre.",
+    "e4 Nf6 e5 Nd5 d4 d6 c4": "Kicks the knight again to gain space; with f4 it becomes the Four Pawns Attack.",
+    "e4 Nf6 e5 Nd5 c4": "Chases the knight early, gaining queenside space.",
+    "e4 Nf6 Nc3": "Declines to chase the knight, steering for quieter positions where Black's provocation has no target.",
+    "e4 Nf6 Nc3 d5": "Challenges e4 directly; after exd5 Nxd5 Black develops easily.",
+}
+PLANS["alekhine"] = {
+    "idea": "Provocation: Black lets White's pawns chase the knight, then attacks them.",
+    "White": "Keep the centre supported and use the space; don't push pawns that can't be defended.",
+    "Black": "Undermine e5 and d4 with ...d6, ...c5 and piece pressure, then exploit the weaknesses left behind.",
+}
+
+NOTES["scandinavian"] = {"e4": E4,
+    "e4 d5": "The Scandinavian: challenges e4 at once, forcing an early decision.",
+    "e4 d5 exd5": "Takes, so Black must spend time recapturing the pawn.",
+    "e4 d5 exd5 Qxd5": "Recaptures with the queen, accepting it will be chased in return for easy development.",
+    "e4 d5 exd5 Qxd5 Nc3": "Develops with tempo on the queen, gaining time for White's development.",
+    "e4 d5 exd5 Qxd5 Nc3 Qa5": "The queen sits on a5, pinning the c3 knight from afar and staying out of harm's way.",
+    "e4 d5 exd5 Qxd5 Nc3 Qd6": "The modern retreat: the queen eyes the centre and b4 while avoiding Bd2 pins.",
+    "e4 d5 exd5 Qxd5 Nc3 Qd8": "Retreats home: solid and safe, but slow.",
+    "e4 d5 exd5 Nf6": "Delays the recapture to develop first, so the queen isn't chased.",
+    "e4 d5 exd5 Nf6 d4": "Returns the pawn calmly for central space; Black regains it with ...Nxd5.",
+    "e4 d5 exd5 Nf6 c4": "Holds the pawn; Black can gambit with ...c6 or ...e6 for development.",
+}
+PLANS["scandinavian"] = {
+    "idea": "Clear the centre early and develop smoothly, even at the cost of a tempo.",
+    "White": "Gain time on the queen, develop with d4, Nf3 and Bc4, and use the extra space.",
+    "Black": "Develop the c8 bishop before ...e6, play ...c6 for a solid shell, and avoid queen traps.",
+}
+
+NOTES["petrov"] = {"e4": E4, "e4 e5": E5, "e4 e5 Nf3": NF3,
+    "e4 e5 Nf3 Nf6": "Petrov: counterattacks e4 instead of defending e5, aiming for a solid, symmetrical game.",
+    "e4 e5 Nf3 Nf6 Nxe5": "Takes the pawn, so Black must win it back carefully: an immediate ...Nxe4 runs into Qe2.",
+    "e4 e5 Nf3 Nf6 Nxe5 d6": "Kicks the knight first, so Black can take e4 next without the Qe2 trap.",
+    "e4 e5 Nf3 Nf6 Nxe5 d6 Nf3": "Retreats, letting Black regain the pawn; White aims to use a small lead in development.",
+    "e4 e5 Nf3 Nf6 Nxe5 d6 Nf3 Nxe4": "Regains the pawn in a symmetrical position, close to equality.",
+    "e4 e5 Nf3 Nf6 Nxe5 d6 Nxf7": "Cochrane Gambit: a piece for two pawns and an exposed king.",
+    "e4 e5 Nf3 Nf6 d4": "Steinitz Attack: opens the centre to use White's lead in development.",
+    "e4 e5 Nf3 Nf6 Nc3": "Defends e4 and heads for Four Knights-style positions.",
+    "e4 e5 Nf3 Nf6 Bc4": "Invites ...Nxe4, offering the e-pawn for quick play against f7.",
+}
+PLANS["petrov"] = {
+    "idea": "Symmetry and solidity: Black mirrors White to reach a safe, balanced position.",
+    "White": "Use the small lead in development: d4, Bd3, castle, and Re1 against the e4 knight.",
+    "Black": "Regain the pawn safely, keep the e4 knight supported with ...d5, and develop symmetrically.",
+}
+
+NOTES["philidor"] = {"e4": E4, "e4 e5": E5, "e4 e5 Nf3": NF3,
+    "e4 e5 Nf3 d6": "Philidor: defends e5 with a pawn; solid but passive, as it blocks the f8 bishop.",
+    "e4 e5 Nf3 d6 d4": "Challenges e5 at once, testing whether Black can hold it.",
+    "e4 e5 Nf3 d6 d4 exd4": "Gives up the centre for open lines and piece play, accepting less space.",
+    "e4 e5 Nf3 d6 d4 Nf6": "Counterattacks e4, so if White takes on e5, Black takes back on e4.",
+    "e4 e5 Nf3 d6 d4 Nf6 Nc3": "Defends e4, keeping the pressure on e5.",
+    "e4 e5 Nf3 d6 d4 Nf6 Nc3 Nbd7": "Lion setup: holds e5 with pieces, heading for ...Be7, ...O-O and ...c6.",
+    "e4 e5 Nf3 d6 d4 Nd7": "Hanham: guards e5 with the knight, so dxe5 is met by ...dxe5 with nothing lost.",
+    "e4 e5 Nf3 d6 d4 f5": "A counter-gambit hitting e4 at once: sharp, risky play for the initiative.",
+    "e4 d6 d4 Nf6 Nc3 e5": "Reaches the Philidor through a Pirc move order, avoiding some of White's sharper options.",
+}
+PLANS["philidor"] = {
+    "idea": "A compact, solid shell around e5, giving White space but few targets.",
+    "White": "Use the space: develop quickly, castle, and look for breaks against e5 or f7.",
+    "Black": "Hold e5 with ...Nbd7, ...Be7 and ...c6, then expand with ...b5 or break with ...exd4.",
+}
+
+NOTES["kingsindian"] = {**INDIAN,
+    "d4 Nf6 c4 g6": "King's Indian: concedes the centre now to strike it later with ...e5 or ...c5.",
+    "d4 Nf6 c4 g6 Nc3": "Develops and supports e4, preparing a big pawn centre.",
+    "d4 Nf6 c4 g6 Nc3 Bg7": "The bishop eyes d4 down the long diagonal, the piece Black's whole plan relies on.",
+    "d4 Nf6 c4 g6 Nc3 Bg7 e4": "Builds a big centre, gaining space but giving Black a target for ...e5 and ...c5.",
+    "d4 Nf6 c4 g6 Nc3 Bg7 e4 d6": "Prepares ...e5, and stops e5 from kicking the knight first.",
+    "d4 Nf6 c4 g6 Nc3 Bg7 Nf3": "Flexible development, keeping e4 available next move.",
+    "d4 Nf6 c4 g6 Nf3": "Keeps options open, often with g3 next, avoiding the sharpest King's Indian lines.",
+    "d4 Nf6 c4 g6 Nf3 Bg7 g3": "Fianchetto: White's bishop meets Black's on the long diagonal, blunting ...e5 counterplay.",
+    "d4 Nf6 Nf3 g6": "The King's Indian setup without c4, so White can choose a quieter system.",
+    "d4 Nf6 Nf3 g6 Bf4": "London-style: the bishop gets outside the pawn chain before e3, avoiding main-line theory.",
+}
+PLANS["kingsindian"] = {
+    "idea": "Let White build a big centre, then hit it with ...e5 and attack on the kingside.",
+    "White": "Keep the centre, close it with d5 when it suits, and attack on the queenside with c5.",
+    "Black": "Play ...e5, then often ...Nh5 and ...f5 for a kingside attack once the centre is locked.",
+}
+
+NOTES["nimzoindian"] = {**INDIAN,
+    "d4 Nf6 c4 e6": "Prepares ...d5 or ...Bb4 and opens the f8 bishop, keeping Black's setup flexible.",
+    "d4 Nf6 c4 e6 Nc3": "Prepares e4, accepting that ...Bb4 can pin the knight.",
+    "d4 Nf6 c4 e6 Nc3 Bb4": "Nimzo-Indian: pins the c3 knight to fight for e4, ready to give the bishop for doubled pawns.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 Qc2": "Classical: recaptures on c3 with the queen, so White keeps a healthy pawn structure.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 Qc2 O-O": "Castles, ready to strike with ...c5 or ...d5 once White commits.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 Qc2 c5": "Hits d4 at once, using the queen's absence from d1.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 Qc2 d5": "Claims the centre while White's queen is on c2, aiming for quick development.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 e3": "Rubinstein: solid, preparing Bd3 and Ne2 so the knight can retake on c3.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 e3 O-O": "Waits to see White's setup before committing the centre pawns.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 e3 b6": "Fianchettoes so the b7 bishop joins the fight for e4.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 e3 c5": "Pressures d4, so White must decide how to handle the centre.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 a3": "Sämisch: forces the bishop to take, winning the bishop pair for doubled pawns.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 a3 Bxc3+": "Doubles White's c-pawns, giving Black targets in return for the bishop pair.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 f3": "Prepares e4 directly, taking the square the pinned knight can't control.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 Bg5": "Leningrad: pins Black's knight in return, so the fight for e4 cuts both ways.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 Nf3": "Develops naturally, keeping e3 or g3 setups open.",
+    "d4 Nf6 c4 e6 Nc3 Bb4 g3": "Fianchetto, adding Catalan-style pressure on the long diagonal.",
+}
+PLANS["nimzoindian"] = {
+    "idea": "Fight for e4 with pieces, ready to trade the bishop for doubled pawns on c3.",
+    "White": "Win the bishop pair, keep the centre, and open the position for the bishops.",
+    "Black": "Control e4, target doubled c-pawns, and keep the position closed so knights shine.",
+}
+
+NOTES["queensindian"] = {**INDIAN,
+    "d4 Nf6 c4 e6": "Prepares ...b6 or ...Bb4 and opens the f8 bishop, keeping Black's setup flexible.",
+    "d4 Nf6 c4 e6 Nf3": "Avoids the Nimzo-Indian pin, so Black needs another way to fight for e4.",
+    "d4 Nf6 c4 e6 Nf3 b6": "Queen's Indian: the bishop will fight for e4 from b7.",
+    "d4 Nf6 c4 e6 Nf3 b6 g3": "Fianchetto, so White's bishop contests the long diagonal against b7.",
+    "d4 Nf6 c4 e6 Nf3 b6 g3 Ba6": "Hits c4, forcing an awkward defence like b3 or Qa4.",
+    "d4 Nf6 c4 e6 Nf3 b6 g3 Bb7": "Classical: aims at e4 and opposes White's g2 bishop on the long diagonal.",
+    "d4 Nf6 c4 e6 Nf3 b6 a3": "Petrosian: rules out ...Bb4 so Nc3 can follow without a pin.",
+    "d4 Nf6 c4 e6 Nf3 b6 a3 Ba6": "Pressures c4 straight away, so White must spend time defending it.",
+    "d4 Nf6 c4 e6 Nf3 b6 e3": "Quiet: prepares Bd3 to contest e4 from the other side.",
+    "d4 Nf6 c4 e6 Nf3 b6 Nc3": "Allows the ...Bb4 pin, heading for Nimzo-Indian ideas.",
+    "d4 Nf6 c4 e6 Nf3 b6 Bf4": "Puts the bishop outside the chain before e3, avoiding main-line theory.",
+    "d4 Nf6 c4 e6 Nf3 Bb4+": "Bogo-Indian: a check to swap the dark-squared bishops or misplace White's pieces.",
+    "d4 Nf6 c4 e6 Nf3 Bb4+ Bd2": "Blocks and offers the trade, so Black must decide about the bishop.",
+    "d4 Nf6 c4 e6 Nf3 Bb4+ Bd2 Qe7": "Keeps the bishop for now and supports ...d6 and ...e5 if White trades on b4.",
+    "d4 Nf6 c4 e6 Nf3 Bb4+ Bd2 a5": "Holds the bishop on b4, so after Bxb4 Black recaptures with the a-pawn.",
+    "d4 Nf6 c4 e6 Nf3 Bb4+ Nbd2": "Blocks with the knight to keep the bishop pair, at some cost in development.",
+}
+PLANS["queensindian"] = {
+    "idea": "Control e4 from b7, keeping a solid position with no weaknesses.",
+    "White": "Fight for e4 with Nc3 and Qc2, and use the extra queenside space.",
+    "Black": "Hold e4 with the b7 bishop and knight, then free the game with ...c5 or ...d5.",
+}
+
+NOTES["grunfeld"] = {**INDIAN,
+    "d4 Nf6 c4 g6": "Prepares the fianchetto; ...d5 next turns it into a Grünfeld.",
+    "d4 Nf6 c4 g6 Nc3": "Develops and supports e4, inviting the Grünfeld's ...d5.",
+    "d4 Nf6 c4 g6 Nc3 d5": "Grünfeld: lets White build a centre, then attacks it with pieces.",
+    "d4 Nf6 c4 g6 Nc3 d5 cxd5": "Exchange Variation: takes on d5 so e4 can follow with tempo on the knight.",
+    "d4 Nf6 c4 g6 Nc3 d5 cxd5 Nxd5": "Recaptures, inviting e4, which gains time but gives Black a centre to attack.",
+    "d4 Nf6 c4 g6 Nc3 d5 Nf3": "Develops first, keeping the centre flexible.",
+    "d4 Nf6 c4 g6 Nc3 d5 Bf4": "Develops with pressure on c7, avoiding the main lines.",
+    "d4 Nf6 c4 g6 Nc3 d5 Bg5": "Develops actively, inviting ...Ne4 to hit the bishop and c3.",
+    "d4 Nf6 c4 g6 Nc3 d5 Bg5 Ne4": "Hits the bishop and c3 at once, gaining time.",
+    "d4 Nf6 c4 g6 Nc3 d5 Qb3": "Pressures d5 with the queen, aiming to win the centre.",
+    "d4 Nf6 c4 g6 Nc3 d5 Qb3 dxc4": "Takes, gaining time when the queen recaptures.",
+    "d4 Nf6 c4 g6 g3 d5": "A Grünfeld setup against the fianchetto, hitting the centre at once.",
+}
+PLANS["grunfeld"] = {
+    "idea": "Let White take the centre with pawns, then attack it with pieces and ...c5.",
+    "White": "Build the e4–d4 centre, support it, and push d5 when it gains space.",
+    "Black": "Hit d4 with the g7 bishop, ...c5 and ...Nc6, and exploit any loosening of White's centre.",
+}
+
+NOTES["slav"] = {**QG,
+    "d4 d5 c4 c6": "Slav: defends d5 while keeping the light-squared bishop free.",
+    "d4 d5 c4 c6 Nf3": "Develops and stops ...e5, limiting Black's freeing moves.",
+    "d4 d5 c4 c6 Nf3 Nf6": "Develops and guards d5 again.",
+    "d4 d5 c4 c6 Nf3 Nf6 Nc3": "Adds pressure on d5, so Black must choose between ...dxc4 and holding.",
+    "d4 d5 c4 c6 Nf3 Nf6 Nc3 dxc4": "Takes, planning ...Bf5 and ...e6 so the bishop is out before the pawn returns.",
+    "d4 d5 c4 c6 Nf3 Nf6 Nc3 a6": "Chebanenko: prepares ...b5 to hold c4 or gain queenside space.",
+    "d4 d5 c4 c6 Nf3 Nf6 Nc3 e6": "Semi-Slav: very solid, with ...dxc4 and ...b5 ideas.",
+    "d4 d5 c4 c6 Nf3 Nf6 e3": "Quiet: protects c4 and prepares Bd3, keeping a solid centre.",
+    "d4 d5 c4 c6 Nf3 Nf6 e3 Bf5": "Gets the bishop out before ...e6 shuts it in: the point of the Slav.",
+    "d4 d5 c4 c6 Nf3 Nf6 e3 Bg4": "Pins the knight, aiming to trade it to ease Black's position.",
+    "d4 d5 c4 c6 cxd5": "Exchange Slav: a symmetrical structure that's hard for either side to unbalance.",
+    "d4 d5 c4 c6 Nc3": "Allows ...dxc4, after which e4 builds a big centre.",
+}
+PLANS["slav"] = {
+    "idea": "Hold d5 with ...c6 so the c8 bishop can still develop outside the pawn chain.",
+    "White": "Pressure d5, regain c4 if Black takes it, and use the space for e4.",
+    "Black": "Develop the bishop to f5 or g4, then ...e6; break with ...c5 or ...e5 when ready.",
+}
+
+NOTES["benoni"] = {**INDIAN,
+    "d4 Nf6 c4 c5": "Benoni: challenges d4, inviting d5 to unbalance the pawn structure.",
+    "d4 Nf6 c4 c5 d5": "Gains space and cramps Black, avoiding a symmetrical centre.",
+    "d4 Nf6 c4 c5 d5 e6": "Modern Benoni: opens the e-file and plans play with the queenside majority.",
+    "d4 Nf6 c4 c5 d5 e6 Nc3": "Supports d5, so Black's exchange there leaves White a strong central pawn.",
+    "d4 Nf6 c4 c5 d5 e6 Nc3 exd5": "Creates the Benoni structure: White gets a central majority, Black a queenside one.",
+    "d4 Nf6 c4 c5 d5 b5": "Benko Gambit: gives a pawn for open a- and b-files against White's queenside.",
+    "d4 Nf6 c4 c5 d5 b5 cxb5": "Accepts the pawn, so Black must prove the open files are worth it.",
+    "d4 Nf6 c4 c5 d5 b5 cxb5 a6": "Opens the a- and b-files for Black's rooks.",
+    "d4 Nf6 c4 c5 d5 e5": "Czech Benoni: closes the centre for a slow, solid game.",
+    "d4 c5": "Old Benoni: ...c5 straight away, inviting d5.",
+    "d4 c5 d5 e5": "Closes the centre, aiming for kingside play with ...f5.",
+}
+PLANS["benoni"] = {
+    "idea": "Unbalance the game: White gets central space, Black gets queenside and dark-square play.",
+    "White": "Use the central majority to push e4–e5, and keep Black's queenside play in check.",
+    "Black": "Use the queenside majority and open files with ...b5, and the long diagonal with ...Bg7.",
+}
+
+NOTES["dutch"] = {"d4": D4,
+    "d4 f5": "Dutch: grabs e4 from the flank for kingside play, at some risk to Black's king.",
+    "d4 f5 c4": "Gains space and prepares Nc3 to fight for e4.",
+    "d4 f5 c4 Nf6": "Controls e4, the square the Dutch is built around.",
+    "d4 f5 c4 Nf6 g3": "A fianchetto: the g2 bishop fights for e4 and the long diagonal.",
+    "d4 f5 c4 Nf6 g3 e6": "Heads for Classical or Stonewall structures and opens the f8 bishop.",
+    "d4 f5 c4 Nf6 g3 e6 Bg2": "The bishop presses e4 and the long diagonal towards b7.",
+    "d4 f5 c4 Nf6 g3 e6 Bg2 d5": "Stonewall: holds e4 with pawns, accepting a hole on e5.",
+    "d4 f5 c4 Nf6 g3 e6 Bg2 Be7": "Classical Dutch: flexible, ready for ...O-O and ...d6.",
+    "d4 f5 g3": "Fianchetto first, aiming the bishop at e4.",
+    "d4 f5 g3 Nf6 Bg2 g6": "Leningrad: a King's Indian-style setup that supports a later ...e5.",
+    "d4 f5 e4": "Staunton Gambit: a pawn for fast development and attacking chances.",
+    "d4 f5 Bg5": "Eyes e7 and provokes ...h6 and ...g5, loosening Black's kingside before ...Nf6 setups.",
+    "d4 f5 Nc3": "Prepares e4 to break open the centre.",
+}
+PLANS["dutch"] = {
+    "idea": "Control e4 with the f-pawn and play for a kingside attack.",
+    "White": "Fianchetto, fight for e4 with Nc3 and Qc2, and exploit the loosened e6 and e5 squares.",
+    "Black": "Hold e4, then attack with ...Qe8–h5 or ...g5, or the Stonewall's ...Ne4 and ...Qe7.",
+}
+
+
+def main():
+    data = json.loads((ROOT / 'data' / 'openings.json').read_text())
+    problems = 0
+    for fam, notes in NOTES.items():
+        prefixes = {' '.join(l['moves'][:i]) for l in data[fam] for i in range(1, len(l['moves']) + 1)}
+        for moves, text in notes.items():
+            board = chess.Board()
+            try:
+                for san in moves.split():
+                    board.push_san(san)
+            except Exception as e:
+                print(f'ILLEGAL   {fam}: {moves} ({e})'); problems += 1; continue
+            if moves not in prefixes:
+                print(f'NOT IN A LINE  {fam}: {moves}'); problems += 1
+            if len(text.split()) > MAX_WORDS:
+                print(f'TOO LONG ({len(text.split())} words)  {fam}: {moves}')
+    for fam in set(data) - set(NOTES):
+        print(f'NO NOTES  {fam}'); problems += 1
+    for fam in set(data) - set(PLANS):
+        print(f'NO PLAN   {fam}'); problems += 1
+    total = sum(len(v) for v in NOTES.values())
+    print(f'{total} notes and {len(PLANS)} plans across {len(NOTES)} families, {problems} problems')
+    if problems:
+        sys.exit(1)
+    for name, obj in (('notes', NOTES), ('plans', PLANS)):
+        with open(ROOT / 'data' / f'{name}.json', 'w') as f:
+            json.dump(obj, f, indent=4, ensure_ascii=False)
+            f.write('\n')
+
+
+if __name__ == '__main__':
+    main()

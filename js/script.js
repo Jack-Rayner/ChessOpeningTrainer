@@ -40,11 +40,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let openingsData = {};
     let notesData = {};
-    // Notes are optional: Learn mode works without them.
-    const notesReady = fetch('./data/notes.json')
+    let plansData = {};
+    // Notes and plans are optional: Learn mode works without them.
+    const optionalJson = url => fetch(url)
         .then(response => (response.ok ? response.json() : {}))
-        .catch(() => ({}))
-        .then(data => { notesData = data; });
+        .catch(() => ({}));
+    const notesReady = Promise.all([optionalJson('./data/notes.json'), optionalJson('./data/plans.json')])
+        .then(([notes, plans]) => { notesData = notes; plansData = plans; });
     const dataReady = fetch('./data/openings.json')
         .then(response => {
             if (!response.ok) throw new Error('Failed to load openings');
@@ -283,6 +285,24 @@ document.addEventListener('DOMContentLoaded', () => {
         el.hidden = true;
         if (text) addNote(san, text);
     }
+    // The opening's idea and your side's plan, shown until your first move.
+    function showPlan(family, side) {
+        const plan = plansData[family];
+        if (!plan) return;
+        const el = $('noteLine');
+        const row = document.createElement('span');
+        row.className = 'note-row plan-row';
+        const b = document.createElement('b');
+        b.textContent = 'The plan';
+        row.append(b, ` ${plan.idea} `);
+        const yours = document.createElement('span');
+        yours.className = 'plan-side';
+        yours.textContent = `As ${side}: ${plan[side]}`;
+        row.append(yours);
+        el.append(row);
+        el.hidden = false;
+    }
+
     function addNote(san, text) {
         const el = $('noteLine');
         const row = document.createElement('span');
@@ -580,6 +600,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setAlt(null);
         setReply(null);
         setNote(null);
+        if (mode === 'learn') showPlan(family, side);
         showActions('drill');
         renderMoves();
         renderMap();
@@ -635,10 +656,14 @@ document.addEventListener('DOMContentLoaded', () => {
         grade(drill.family, drill.userColor, positionKey(game.fen()), correct);
     }
 
+    // Returns true when a note was shown.
     function showNoteFor(san) {
-        if (drill.mode !== 'learn') return;
+        if (drill.mode !== 'learn') return false;
+        // While the plan card is up (you play Black), it stays the only note until your move.
+        if ($('noteLine').querySelector('.plan-row')) return false;
         const text = getNotes(drill.family).get(positionKey(game.fen()));
         if (text) addNote(san, text);
+        return Boolean(text);
     }
 
     // Returns true when the move was a book move and has been played.
@@ -719,8 +744,8 @@ document.addEventListener('DOMContentLoaded', () => {
         drill.opponentChoices.push(san);
         board.position(game.fen());
         setReply(san);
-        if (game.history().length === 1) setNote(null);
-        showNoteFor(san);
+        // A note on the reply starts with the move in bold, so the reply line would repeat it.
+        if (showNoteFor(san)) setReply(null);
         afterMove();
     }
 
@@ -811,6 +836,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const locked = all.size - unlocked.size;
         $('mapHeading').textContent = familyName(family);
+        const plan = plansData[family];
+        $('mapPlan').hidden = !plan;
+        if (plan) {
+            const esc = t => t.replace(/[&<>"]/g, ch => `&#${ch.charCodeAt(0)};`);
+            const you = drill.side, them = you === 'White' ? 'Black' : 'White';
+            $('mapPlan').innerHTML = `<p class="plan-idea">${esc(plan.idea)}</p>` +
+                `<p><b>You, ${you}:</b> ${esc(plan[you])}</p>` +
+                `<p><b>Them, ${them}:</b> ${esc(plan[them])}</p>`;
+        }
         $('mapSummary').textContent =
             `${counts.learned} known · ${counts.learning} learning · ${counts.new} new` +
             (locked ? ` · ${locked} locked` : '') + (due ? `. ${due} due for review.` : '.');

@@ -170,6 +170,12 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .note-row + .note-row { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--brass-line); }
 
 /* Family map */
+.plan-row b { margin-right: 6px; }
+.plan-side { display: block; margin-top: 4px; font-style: italic; color: var(--text-soft); }
+.map-plan { margin: 4px 0 12px; padding: 10px 14px; border-left: 2px solid var(--brass); border-radius: 0 10px 10px 0; background: var(--card-bg); font-size: 15px; line-height: 1.45; }
+.map-plan p + p { margin-top: 4px; }
+.map-plan .plan-idea { font-family: var(--serif-display); color: var(--heading); }
+.map-plan b { font-weight: 600; color: var(--label); }
 .map-summary { color: var(--text-soft); font-size: 15px; }
 .map-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 8px 0 10px; font-size: 13px; color: var(--text-soft); }
 .map-legend span { display: inline-flex; align-items: center; gap: 6px; }
@@ -281,7 +287,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
     .card.is-collapsed .card-body { display: block; }
     .setup-summary { display: none !important; }
     body:not(.has-drill) .moves-card { display: none; }
-    body.has-drill { padding-bottom: calc(68px + env(safe-area-inset-bottom)); }
+    body.has-drill { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
     body.has-drill .sheetable:not(.is-sheet-open) { display: none; }
     body.has-drill .layout { gap: 14px; }
 
@@ -293,8 +299,8 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
     .move-strip .cur { color: var(--accent); font-weight: 600; }
 
     body.has-drill .sheet-bar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; padding: 4px 8px env(safe-area-inset-bottom); background: var(--bg); border-top: 1px solid var(--brass); }
-    .sheet-bar button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 58px; font-family: var(--serif-caps); font-size: 12px; letter-spacing: 0.16em; color: var(--label); }
-    .sheet-bar button svg { width: 22px; height: 22px; color: var(--brass-text); }
+    .sheet-bar button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-height: 50px; font-family: var(--serif-caps); font-size: 12px; letter-spacing: 0.16em; color: var(--label); }
+    .sheet-bar button svg { width: 20px; height: 20px; color: var(--brass-text); }
     .sheet-bar button[hidden] { display: none; }
 
     .sheet-scrim.is-open { display: block; position: fixed; inset: 0; z-index: 35; background: var(--scrim); }
