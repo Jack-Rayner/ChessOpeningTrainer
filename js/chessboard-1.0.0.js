@@ -1284,6 +1284,11 @@
         return
       }
 
+      liftPiece(source, piece, x, y)
+    }
+
+    // Picks the piece up: hides it on its square and shows the dragged copy under the pointer.
+    function liftPiece (source, piece, x, y) {
       // set state
       isDragging = true
       draggedPiece = piece
@@ -1584,39 +1589,65 @@
     // Browser Events
     // -------------------------------------------------------------------------
 
-    var startSquare = null; // To track the initial square on mouse down
-
     function stopDefault(evt) {
       evt.preventDefault();
     }
 
+    // A press on a piece doesn't lift it straight away. It lifts once the pointer
+    // moves a few pixels (a drag); released without moving, it's a tap, reported to
+    // onDrop as a drop on its own square with nothing animated.
+    var LIFT_DISTANCE = 7
+    var pendingPress = null // { square, piece, x, y }
+
+    function pressPiece (square, x, y) {
+      if (!config.draggable) return
+      if (!validSquare(square) || !currentPosition.hasOwnProperty(square)) return
+      var piece = currentPosition[square]
+      if (isFunction(config.onDragStart) &&
+          config.onDragStart(square, piece, deepCopy(currentPosition), currentOrientation) === false) {
+        return
+      }
+      pendingPress = { square: square, piece: piece, x: x, y: y }
+    }
+
+    function movePointer (x, y) {
+      if (pendingPress) {
+        if (Math.sqrt(Math.pow(x - pendingPress.x, 2) + Math.pow(y - pendingPress.y, 2)) < LIFT_DISTANCE) return
+        var press = pendingPress
+        pendingPress = null
+        liftPiece(press.square, press.piece, press.x, press.y)
+      }
+      if (isDragging) updateDraggedPiece(x, y)
+    }
+
+    function releasePointer (x, y) {
+      if (pendingPress) {
+        var press = pendingPress
+        pendingPress = null
+        if (isFunction(config.onDrop)) {
+          config.onDrop(press.square, press.square, press.piece,
+            deepCopy(currentPosition), deepCopy(currentPosition), currentOrientation)
+        }
+        return
+      }
+      // A release always finishes a drag, even back on the starting square.
+      if (isDragging) stopDraggedPiece(isXYOnSquare(x, y))
+    }
+
     function mousedownSquare(evt) {
-      // do nothing if we're not draggable
-      if (!config.draggable) return;
-
-      // do nothing if there is no piece on this square
-      var square = $(this).attr('data-square');
-      if (!validSquare(square)) return;
-      if (!currentPosition.hasOwnProperty(square)) return;
-
-      // Track the initial square
-      startSquare = square;
-      beginDraggingPiece(square, currentPosition[square], evt.pageX, evt.pageY);
+      pressPiece($(this).attr('data-square'), evt.pageX, evt.pageY)
     }
 
     function touchstartSquare(e) {
-      // do nothing if we're not draggable
-      if (!config.draggable) return;
+      var square = $(this).attr('data-square')
+      if (!validSquare(square) || !currentPosition.hasOwnProperty(square)) return
 
-      // do nothing if there is no piece on this square
-      var square = $(this).attr('data-square');
-      if (!validSquare(square)) return;
-      if (!currentPosition.hasOwnProperty(square)) return;
+      // A touch on a piece is handled here; stop the browser following it with
+      // emulated mouse events, which would press the same piece a second time.
+      e.preventDefault()
 
-      e = e.originalEvent;
-      // Track the initial square
-      startSquare = square;
-      beginDraggingPiece(square, currentPosition[square], e.changedTouches[0].pageX, e.changedTouches[0].pageY);
+      var touch = e.originalEvent.changedTouches[0]
+      pressPiece(square, touch.pageX, touch.pageY)
     }
 
     function mousedownSparePiece(evt) {
@@ -1638,61 +1669,37 @@
     }
 
     function mousemoveWindow(evt) {
-      if (isDragging) {
-        updateDraggedPiece(evt.pageX, evt.pageY);
-      }
+      movePointer(evt.pageX, evt.pageY)
     }
 
     var throttledMousemoveWindow = throttle(mousemoveWindow, config.dragThrottleRate);
 
     function touchmoveWindow(evt) {
-      // do nothing if we are not dragging a piece
-      if (!isDragging) return;
+      // do nothing unless a piece is pressed or lifted
+      if (!pendingPress && !isDragging) return;
 
       // prevent screen from scrolling
       evt.preventDefault();
 
-      updateDraggedPiece(evt.originalEvent.changedTouches[0].pageX, evt.originalEvent.changedTouches[0].pageY);
+      var touch = evt.originalEvent.changedTouches[0]
+      movePointer(touch.pageX, touch.pageY)
     }
 
     var throttledTouchmoveWindow = throttle(touchmoveWindow, config.dragThrottleRate);
 
     function mouseupWindow(evt) {
-      // do nothing if we are not dragging a piece
-      if (!isDragging) return;
-
-      // get the location
-      var endSquare = isXYOnSquare(evt.pageX, evt.pageY);
-
-      // Only move if the square is different
-      if (endSquare !== startSquare) {
-        stopDraggedPiece(endSquare);
-      } else {
-        // Reset the drag without moving the piece if the squares are the same
-        cancelDrag();
-      }
-
-      // Reset startSquare after handling the release
-      startSquare = null;
+      releasePointer(evt.pageX, evt.pageY)
     }
 
     function touchendWindow(evt) {
-      // do nothing if we are not dragging a piece
-      if (!isDragging) return;
+      var touch = evt.originalEvent.changedTouches[0]
+      releasePointer(touch.pageX, touch.pageY)
+    }
 
-      // get the location
-      var endSquare = isXYOnSquare(evt.originalEvent.changedTouches[0].pageX, evt.originalEvent.changedTouches[0].pageY);
-
-      // Only move if the square is different
-      if (endSquare !== startSquare) {
-        stopDraggedPiece(endSquare);
-      } else {
-        // Reset the drag without moving the piece if the squares are the same
-        cancelDrag();
-      }
-
-      // Reset startSquare after handling the release
-      startSquare = null;
+    // The system interrupted the touch (a notification, an edge swipe): put the piece back.
+    function touchcancelWindow() {
+      pendingPress = null
+      if (isDragging) stopDraggedPiece('offboard')
     }
 
     function mouseenterSquare(evt) {
@@ -1774,6 +1781,7 @@
         $window
           .on('touchmove', throttledTouchmoveWindow)
           .on('touchend', touchendWindow)
+          .on('touchcancel', touchcancelWindow)
       }
     }
 
